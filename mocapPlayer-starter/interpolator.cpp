@@ -352,8 +352,9 @@ void Interpolator::BezierInterpolationQuaternion(Motion * pInputMotion, Motion *
                     //a = LERPEuler(1 / 3, startPosture->bone_rotation[bone], LERPEuler(2, nextPosture->bone_rotation[bone], endPosture->bone_rotation[bone]));
                     a = Slerp(1.0/3.0, q_1,Slerp(2,q_3,q_2));
 
-                    a_bar = Slerp(0.5, Slerp(2, q_1, q_2), q_3);
+                    a_bar = Slerp(0.5, Slerp(2.0, q_1, q_2), q_3);
                     b = Slerp(-1.0 / 3.0, q_2, a_bar);
+                    
                 }
                 else if (startKeyframe + 2 * N + 2 > inputLength)
                 {
@@ -394,6 +395,18 @@ void Interpolator::BezierInterpolationQuaternion(Motion * pInputMotion, Motion *
                 result = DeCasteljauQuaternion(t, start,a,b,end);
                 Quaternion2Euler(result, resultEuler);
                 interpolatedPosture.bone_rotation[bone] = resultEuler;
+                //if (resultEuler[0] != resultEuler[0])
+                //{
+                //    printf("startKeyframe: %d\n", startKeyframe);
+                //    //printf("%.1f, %.1f, %.1f, %.1f", result.Gets(), result.Getx(), result.Gety(), result.Getz());
+                //    //printf("%.1f, %.1f, %.1f, %.1f", result.Gets(), result.Getx(), result.Gety(), result.Getz());
+                //    printf("%.1f, %.1f, %.1f, %.1f", end.Gets(), end.Getx(), end.Gety(), end.Getz());
+                //    printf("\n");
+                //}
+
+                /*for (int i = 0; i < 3; i++)
+                    printf("%.1f, %.1f, %.1f", resultEuler[0], resultEuler[1], resultEuler[2]);
+                printf("\n");*/
                 //interpolatedPosture.bone_rotation[bone] = DeCasteljauEuler(t, startPosture->bone_rotation[bone], a, b, endPosture->bone_rotation[bone]);
             }
             pOutputMotion->SetPosture(startKeyframe + frame, interpolatedPosture);
@@ -415,6 +428,7 @@ void Interpolator::Euler2Quaternion(double angles[3], Quaternion<double> & q)
     Quaternion<double> y = Quaternion<double>(cos(angles[1] / 2),0, sin(angles[1] / 2),0 );
     Quaternion<double> z = Quaternion<double>(cos(angles[2] / 2),0,0, sin(angles[2] / 2));
     q = z * y * x;
+    q.Normalize();
     //convert it back to degree
     for (int i = 0; i < 3; i++)
         angles[i] *= 180 / M_PI;
@@ -441,6 +455,8 @@ void Interpolator::Quaternion2Euler(Quaternion<double> & q, double angles[3])
 
 Quaternion<double> Interpolator::Slerp(double t, Quaternion<double> & qStart, Quaternion<double> & qEnd_)
 {
+    if (qStart == qEnd_)
+        return qStart;
   // students should implement this
   Quaternion<double> result;
   Quaternion<double> qStartAlternative = -1 * qStart;
@@ -448,6 +464,14 @@ Quaternion<double> Interpolator::Slerp(double t, Quaternion<double> & qStart, Qu
   double beta = qStartAlternative.Gets() * qEnd_.Gets() + qStartAlternative.Getx() * qEnd_.Getx() + qStartAlternative.Gety() * qEnd_.Gety()+ qStartAlternative.Getz() * qEnd_.Getz();
   double theta = acos(delta);
   double alpha = acos(beta);
+  if (theta != theta)
+  {
+      printf("*****************************\n");
+      printf("qStart: %.1f, %.1f, %.1f, %.1f\n", qStart.Gets(), qStart.Getx(), qStart.Gety(), qStart.Getz());
+      printf("qEnd_: %.1f, %.1f, %.1f, %.1f\n", qEnd_.Gets(), qEnd_.Getx(), qEnd_.Gety(), qEnd_.Getz());
+  }
+
+
   if (theta > alpha)
   {
       qStart = qStartAlternative;
@@ -502,6 +526,20 @@ Quaternion<double> Interpolator::DeCasteljauQuaternion(double t, Quaternion<doub
   Quaternion<double> r0 = Slerp(t, q0, q1);
   Quaternion<double> r1 = Slerp(t, q1, q2);
   result = Slerp(t, r0, r1);
+
+  if (result != result)
+  {
+      /*printf("%.1f \n", t);
+      printf("p0: %.1f, %.1f, %.1f, %.1f\n", p0.Gets(), p0.Getx(), p0.Gety(), p0.Getz());
+      printf("p1: %.1f, %.1f, %.1f, %.1f\n", p1.Gets(), p1.Getx(), p1.Gety(), p1.Getz());
+      printf("p2: %.1f, %.1f, %.1f, %.1f\n", p2.Gets(), p2.Getx(), p2.Gety(), p2.Getz());
+      printf("p3: %.1f, %.1f, %.1f, %.1f\n", p3.Gets(), p3.Getx(), p3.Gety(), p3.Getz());
+
+      printf("q0: %.1f, %.1f, %.1f, %.1f\n", q0.Gets(), q0.Getx(), q0.Gety(), q0.Getz());
+      printf("q1: %.1f, %.1f, %.1f, %.1f\n", q1.Gets(), q1.Getx(), q1.Gety(), q1.Getz());
+      printf("q2: %.1f, %.1f, %.1f, %.1f\n", q2.Gets(), q2.Getx(), q2.Gety(), q2.Getz());*/
+  }
+
   return result;
 }
 
