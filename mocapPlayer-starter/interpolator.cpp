@@ -215,19 +215,24 @@ void Interpolator::BezierInterpolationEuler(Motion * pInputMotion, Motion * pOut
                 if (startKeyframe==0)
                 {
                     Posture* nextPosture = pInputMotion->GetPosture(endKeyframe + N + 1);
-                    a = LERPEuler(1/3, startPosture->bone_rotation[bone], LERPEuler(2, nextPosture->bone_rotation[bone],endPosture->bone_rotation[bone]));
+                    a = LERPEuler(1.0/3.0, startPosture->bone_rotation[bone], LERPEuler(2, nextPosture->bone_rotation[bone],endPosture->bone_rotation[bone]));
+
+                    a_bar = LERPEuler(0.5, LERPEuler(2.0, startPosture->bone_rotation[bone], endPosture->bone_rotation[bone]), nextPosture->bone_rotation[bone]);
+                    b = LERPEuler(-1.0 / 3.0, startPosture->bone_rotation[bone], a_bar);
                 }
                 else if (startKeyframe + 2 * N + 2 > inputLength)
                 {
                     Posture* prePosture = pInputMotion->GetPosture(startKeyframe - N - 1);
-                    b = LERPEuler(1 / 3, endPosture->bone_rotation[bone], LERPEuler(1/3, prePosture->bone_rotation[bone],startPosture->bone_rotation[bone]));
+                    b = LERPEuler(1.0 / 3.0, endPosture->bone_rotation[bone], LERPEuler(2, prePosture->bone_rotation[bone],startPosture->bone_rotation[bone]));
+                    a_bar = LERPEuler(0.5, LERPEuler(2.0, prePosture->bone_rotation[bone], startPosture->bone_rotation[bone]), endPosture->bone_rotation[bone]);
+                    a = LERPEuler(1.0 / 3.0, startPosture->bone_rotation[bone], a_bar);
                 }
                 else
                 {
                     Posture* prePosture = pInputMotion->GetPosture(startKeyframe - N - 1);
                     a_bar = LERPEuler(0.5, LERPEuler(2.0, prePosture->bone_rotation[bone], startPosture->bone_rotation[bone]), endPosture->bone_rotation[bone]);
-                    a = LERPEuler(1 / 3, startPosture->bone_rotation[bone], a_bar);
-                    b = LERPEuler(-1 / 3, startPosture->bone_rotation[bone], a_bar);
+                    a = LERPEuler(1.0 / 3.0, startPosture->bone_rotation[bone], a_bar);
+                    b = LERPEuler(-1.0 / 3.0, startPosture->bone_rotation[bone], a_bar);
                 }
                 interpolatedPosture.bone_rotation[bone] = DeCasteljauEuler(t, startPosture->bone_rotation[bone],a,b, endPosture->bone_rotation[bone]);
             }
@@ -294,6 +299,110 @@ void Interpolator::LinearInterpolationQuaternion(Motion * pInputMotion, Motion *
 void Interpolator::BezierInterpolationQuaternion(Motion * pInputMotion, Motion * pOutputMotion, int N)
 {
   // students should implement this
+    int inputLength = pInputMotion->GetNumFrames(); // frames are indexed 0, ..., inputLength-1
+
+    int startKeyframe = 0;
+    Quaternion<double> a, a_bar, b;
+
+    while (startKeyframe + N + 1 < inputLength)
+    {
+        int endKeyframe = startKeyframe + N + 1;
+
+        Posture* startPosture = pInputMotion->GetPosture(startKeyframe);
+        Posture* endPosture = pInputMotion->GetPosture(endKeyframe);
+
+        // copy start and end keyframe
+        pOutputMotion->SetPosture(startKeyframe, *startPosture);
+        pOutputMotion->SetPosture(endKeyframe, *endPosture);
+
+        /*if (startKeyframe == 0)
+            a = LERPEuler();*/
+            // interpolate in between
+        for (int frame = 1; frame <= N; frame++)
+        {
+            Posture interpolatedPosture;
+            double t = 1.0 * frame / (N + 1);
+
+            // interpolate root position
+            interpolatedPosture.root_pos = startPosture->root_pos * (1 - t) + endPosture->root_pos * t;
+
+            // interpolate bone rotations
+            for (int bone = 0; bone < MAX_BONES_IN_ASF_FILE; bone++)
+            {
+                Quaternion<double> start, end, result;
+                double startAngles[3], endAngles[3],resultEuler[3];
+
+                startPosture->bone_rotation[bone].getValue(startAngles);
+                endPosture->bone_rotation[bone].getValue(endAngles);
+
+                Euler2Quaternion(startAngles, start);
+                Euler2Quaternion(endAngles, end);
+
+                if (startKeyframe == 0)
+                {
+                    Quaternion<double> q_1, q_2, q_3;
+                    double tmp[3];
+                    Posture* nextPosture = pInputMotion->GetPosture(endKeyframe + N + 1);
+                    startPosture->bone_rotation[bone].getValue(tmp);
+                    Euler2Quaternion(tmp,q_1);
+                    endPosture->bone_rotation[bone].getValue(tmp);
+                    Euler2Quaternion(tmp, q_2);
+                    nextPosture->bone_rotation[bone].getValue(tmp);
+                    Euler2Quaternion(tmp, q_3);
+                    //a = LERPEuler(1 / 3, startPosture->bone_rotation[bone], LERPEuler(2, nextPosture->bone_rotation[bone], endPosture->bone_rotation[bone]));
+                    a = Slerp(1.0/3.0, q_1,Slerp(2,q_3,q_2));
+
+                    a_bar = Slerp(0.5, Slerp(2, q_1, q_2), q_3);
+                    b = Slerp(-1.0 / 3.0, q_2, a_bar);
+                }
+                else if (startKeyframe + 2 * N + 2 > inputLength)
+                {
+                    Quaternion<double> q_1, q_2, q_3;
+                    double tmp[3];
+                    Posture* prePosture = pInputMotion->GetPosture(startKeyframe - N - 1);
+                    prePosture->bone_rotation[bone].getValue(tmp);
+                    Euler2Quaternion(tmp, q_1);
+                    startPosture->bone_rotation[bone].getValue(tmp);
+                    Euler2Quaternion(tmp, q_2);
+                    endPosture->bone_rotation[bone].getValue(tmp);
+                    Euler2Quaternion(tmp, q_3);
+                    //b = LERPEuler(1 / 3, endPosture->bone_rotation[bone], LERPEuler(2, prePosture->bone_rotation[bone], startPosture->bone_rotation[bone]));
+                    b = Slerp(1.0/3.0,q_3,Slerp(2,q_1,q_2));
+
+                    a_bar = Slerp(0.5, Slerp(2, q_1, q_2), q_3);
+                    a = Slerp(1.0 / 3.0, q_2, a_bar);
+                }
+                else
+                {
+                    Quaternion<double> q_1, q_2, q_3;
+                    double tmp[3];
+                    Posture* prePosture = pInputMotion->GetPosture(startKeyframe - N - 1);
+                    prePosture->bone_rotation[bone].getValue(tmp);
+                    Euler2Quaternion(tmp, q_1);
+                    startPosture->bone_rotation[bone].getValue(tmp);
+                    Euler2Quaternion(tmp, q_2);
+                    endPosture->bone_rotation[bone].getValue(tmp);
+                    Euler2Quaternion(tmp, q_3);
+
+                    a_bar = Slerp(0.5,Slerp(2,q_1,q_2),q_3);
+                    a = Slerp(1.0/3.0,q_2,a_bar);
+                    b = Slerp(-1.0/3.0,q_2,a_bar);
+                   // a_bar = LERPEuler(0.5, LERPEuler(2.0, prePosture->bone_rotation[bone], startPosture->bone_rotation[bone]), endPosture->bone_rotation[bone]);
+                   // a = LERPEuler(1 / 3, startPosture->bone_rotation[bone], a_bar);
+                    //b = LERPEuler(-1 / 3, startPosture->bone_rotation[bone], a_bar);
+                }
+                result = DeCasteljauQuaternion(t, start,a,b,end);
+                Quaternion2Euler(result, resultEuler);
+                interpolatedPosture.bone_rotation[bone] = resultEuler;
+                //interpolatedPosture.bone_rotation[bone] = DeCasteljauEuler(t, startPosture->bone_rotation[bone], a, b, endPosture->bone_rotation[bone]);
+            }
+            pOutputMotion->SetPosture(startKeyframe + frame, interpolatedPosture);
+        }
+        startKeyframe = endKeyframe;
+    }
+
+    for (int frame = startKeyframe + 1; frame < inputLength; frame++)
+        pOutputMotion->SetPosture(frame, *(pInputMotion->GetPosture(frame)));
 }
 
 void Interpolator::Euler2Quaternion(double angles[3], Quaternion<double> & q) 
@@ -340,8 +449,11 @@ Quaternion<double> Interpolator::Slerp(double t, Quaternion<double> & qStart, Qu
   double theta = acos(delta);
   double alpha = acos(beta);
   if (theta > alpha)
+  {
       qStart = qStartAlternative;
-  if (theta < 0.01 || alpha<0.01)
+      theta = alpha;
+  }
+  if (theta < 0.01 )
   {
       //theta is small then we do LERP
       result = (1 - t) * qStart + t * qEnd_;
