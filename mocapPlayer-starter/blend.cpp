@@ -87,11 +87,13 @@ int main(int argc, char** argv)
 
     int frameNum = std::min(firstMotion->GetNumFrames(), secondMotion->GetNumFrames());
 
+
+
     Motion* pOutputMotion = new Motion(frameNum, pSkeleton);
 
     blender* b = new blender();
-    b->setAnimation(firstMotion,0.5, 0, MAX_BONES_IN_ASF_FILE);
-    b->setAnimation(secondMotion,0.5, 0, MAX_BONES_IN_ASF_FILE);
+    b->setAnimation(firstMotion,t, 0, MAX_BONES_IN_ASF_FILE);
+    b->setAnimation(secondMotion,t, 0, MAX_BONES_IN_ASF_FILE);
     b->calcaluteResult(pOutputMotion);
 
     int forceAllJointsBe3DOF = 1;

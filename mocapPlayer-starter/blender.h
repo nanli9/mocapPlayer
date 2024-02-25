@@ -23,8 +23,6 @@ public:
 		this->endJoint = endJoint;
 	};
 
-
-
 };
 
 

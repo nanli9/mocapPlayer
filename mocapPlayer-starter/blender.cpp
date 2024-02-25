@@ -120,18 +120,25 @@ void blender::calcaluteResult(Motion* pOutputMotion)
 			//go through all the bones
 			for (int bone = 0; bone < MAX_BONES_IN_ASF_FILE; bone++)
 			{
-				Quaternion<double> first, second;
-				double firstAngles[3], secondAngles[3], resultEuler[3];
+				//if the blend is partial, assume first slot is always full body
+				if (bone< animationSlots[1].startJoint || bone > animationSlots[1].endJoint)
+					blendPosture.bone_rotation[bone] = firstStartPosture->bone_rotation[bone];
+				else
+				{
+					Quaternion<double> q_1, q_2;
+					double firstAngles[3], secondAngles[3], resultEuler[3];
 
-				firstStartPosture->bone_rotation[bone].getValue(firstAngles);
-				secondStartPosture->bone_rotation[bone].getValue(secondAngles);
+					firstStartPosture->bone_rotation[bone].getValue(firstAngles);
+					secondStartPosture->bone_rotation[bone].getValue(secondAngles);
 
-				Euler2Quaternion(firstAngles, first);
-				Euler2Quaternion(secondAngles, second);
+					Euler2Quaternion(firstAngles, q_1);
+					Euler2Quaternion(secondAngles, q_2);
 
-				result = Slerp(weight, first, second);
-				Quaternion2Euler(result, resultEuler);
-				blendPosture.bone_rotation[bone] = resultEuler;
+					result = Slerp(weight, q_1, q_2);
+					Quaternion2Euler(result, resultEuler);
+					blendPosture.bone_rotation[bone] = resultEuler;
+				}
+				
 			}
 
 
@@ -139,12 +146,51 @@ void blender::calcaluteResult(Motion* pOutputMotion)
 			if (animationNum > 2)
 			{
 				Posture* thirdStartPosture = animationSlots[2].m->GetPosture(startFrame);
+				for (int bone = 0; bone < MAX_BONES_IN_ASF_FILE; bone++)
+				{
+					if (bone< animationSlots[2].startJoint || bone > animationSlots[2].endJoint)
+						continue;
+					else
+					{
+						Quaternion<double> q_1, q_2;
+						double firstAngles[3], secondAngles[3], resultEuler[3];
 
+						blendPosture.bone_rotation[bone].getValue(firstAngles);
+						thirdStartPosture->bone_rotation[bone].getValue(secondAngles);
+
+						Euler2Quaternion(firstAngles, q_1);
+						Euler2Quaternion(secondAngles, q_2);
+
+						result = Slerp(weight, q_1, q_2);
+						Quaternion2Euler(result, resultEuler);
+						blendPosture.bone_rotation[bone] = resultEuler;
+					}
+					
+				}
 
 				if (animationNum > 3)
 				{
 					Posture* fourthStartPosture = animationSlots[3].m->GetPosture(startFrame);
+					for (int bone = 0; bone < MAX_BONES_IN_ASF_FILE; bone++)
+					{
+						if (bone< animationSlots[3].startJoint || bone > animationSlots[3].endJoint)
+							continue;
+						else
+						{
+							Quaternion<double> q_1, q_2;
+							double firstAngles[3], secondAngles[3], resultEuler[3];
 
+							blendPosture.bone_rotation[bone].getValue(firstAngles);
+							fourthStartPosture->bone_rotation[bone].getValue(secondAngles);
+
+							Euler2Quaternion(firstAngles, q_1);
+							Euler2Quaternion(secondAngles, q_2);
+
+							result = Slerp(weight, q_1, q_2);
+							Quaternion2Euler(result, resultEuler);
+							blendPosture.bone_rotation[bone] = resultEuler;
+						}
+					}
 				}
 
 			}
