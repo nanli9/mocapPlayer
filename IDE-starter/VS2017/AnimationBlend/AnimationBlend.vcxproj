@@ -127,7 +127,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\mocapPlayer-starter\main.cpp" />
+    <ClCompile Include="..\..\..\mocapPlayer-starter\blend.cpp" />
+    <ClCompile Include="..\..\..\mocapPlayer-starter\blender.cpp" />
     <ClCompile Include="..\..\..\mocapPlayer-starter\motion.cpp" />
     <ClCompile Include="..\..\..\mocapPlayer-starter\posture.cpp" />
     <ClCompile Include="..\..\..\mocapPlayer-starter\quaternion.cpp" />
@@ -136,6 +137,7 @@
     <ClCompile Include="..\..\..\mocapPlayer-starter\vector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\mocapPlayer-starter\blender.h" />
     <ClInclude Include="..\..\..\mocapPlayer-starter\motion.h" />
     <ClInclude Include="..\..\..\mocapPlayer-starter\posture.h" />
     <ClInclude Include="..\..\..\mocapPlayer-starter\quaternion.h" />

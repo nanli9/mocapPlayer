@@ -33,7 +33,10 @@
     <ClCompile Include="..\..\..\mocapPlayer-starter\vector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\mocapPlayer-starter\main.cpp">
+    <ClCompile Include="..\..\..\mocapPlayer-starter\blend.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\mocapPlayer-starter\blender.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -51,6 +54,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\mocapPlayer-starter\vector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\mocapPlayer-starter\blender.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

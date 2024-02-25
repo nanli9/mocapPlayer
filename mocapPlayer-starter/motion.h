@@ -26,7 +26,6 @@ class Motion
 {
   //function members
 public:
-
   // parse AMC file (default scale=0.06)
   Motion(char *amc_filename, double scale, Skeleton * pSkeleton);
 
