@@ -1,0 +1,178 @@
+//
+// MEL script created by amc2mov version 1.2
+//
+// Biomechanics, Inc.
+//
+
+
+proc createAMCDevice()
+{
+  defineVirtualDevice -create;
+  defineVirtualDevice -channel root_posX -usage posX -axis 0;
+  defineVirtualDevice -channel root_posY -usage posY -axis 1;
+  defineVirtualDevice -channel root_posZ -usage posZ -axis 2;
+  defineVirtualDevice -channel root_rotX -usage rotX -axis 3;
+  defineVirtualDevice -channel root_rotY -usage rotY -axis 4;
+  defineVirtualDevice -channel root_rotZ -usage rotZ -axis 5;
+  defineVirtualDevice -channel lfemur_rotX -usage rotX -axis 6;
+  defineVirtualDevice -channel lfemur_rotY -usage rotY -axis 7;
+  defineVirtualDevice -channel lfemur_rotZ -usage rotZ -axis 8;
+  defineVirtualDevice -channel ltibia_rotX -usage rotX -axis 9;
+  defineVirtualDevice -channel lfoot_rotX -usage rotX -axis 10;
+  defineVirtualDevice -channel lfoot_rotZ -usage rotZ -axis 11;
+  defineVirtualDevice -channel ltoes_rotX -usage rotX -axis 12;
+  defineVirtualDevice -channel rfemur_rotX -usage rotX -axis 13;
+  defineVirtualDevice -channel rfemur_rotY -usage rotY -axis 14;
+  defineVirtualDevice -channel rfemur_rotZ -usage rotZ -axis 15;
+  defineVirtualDevice -channel rtibia_rotX -usage rotX -axis 16;
+  defineVirtualDevice -channel rfoot_rotX -usage rotX -axis 17;
+  defineVirtualDevice -channel rfoot_rotZ -usage rotZ -axis 18;
+  defineVirtualDevice -channel rtoes_rotX -usage rotX -axis 19;
+  defineVirtualDevice -channel lowerback_rotX -usage rotX -axis 20;
+  defineVirtualDevice -channel lowerback_rotY -usage rotY -axis 21;
+  defineVirtualDevice -channel lowerback_rotZ -usage rotZ -axis 22;
+  defineVirtualDevice -channel upperback_rotX -usage rotX -axis 23;
+  defineVirtualDevice -channel upperback_rotY -usage rotY -axis 24;
+  defineVirtualDevice -channel upperback_rotZ -usage rotZ -axis 25;
+  defineVirtualDevice -channel thorax_rotX -usage rotX -axis 26;
+  defineVirtualDevice -channel thorax_rotY -usage rotY -axis 27;
+  defineVirtualDevice -channel thorax_rotZ -usage rotZ -axis 28;
+  defineVirtualDevice -channel lowerneck_rotX -usage rotX -axis 29;
+  defineVirtualDevice -channel lowerneck_rotY -usage rotY -axis 30;
+  defineVirtualDevice -channel lowerneck_rotZ -usage rotZ -axis 31;
+  defineVirtualDevice -channel upperneck_rotX -usage rotX -axis 32;
+  defineVirtualDevice -channel upperneck_rotY -usage rotY -axis 33;
+  defineVirtualDevice -channel upperneck_rotZ -usage rotZ -axis 34;
+  defineVirtualDevice -channel head_rotX -usage rotX -axis 35;
+  defineVirtualDevice -channel head_rotY -usage rotY -axis 36;
+  defineVirtualDevice -channel head_rotZ -usage rotZ -axis 37;
+  defineVirtualDevice -channel lclavicle_rotY -usage rotY -axis 38;
+  defineVirtualDevice -channel lclavicle_rotZ -usage rotZ -axis 39;
+  defineVirtualDevice -channel lhumerus_rotX -usage rotX -axis 40;
+  defineVirtualDevice -channel lhumerus_rotY -usage rotY -axis 41;
+  defineVirtualDevice -channel lhumerus_rotZ -usage rotZ -axis 42;
+  defineVirtualDevice -channel lradius_rotX -usage rotX -axis 43;
+  defineVirtualDevice -channel lwrist_rotY -usage rotY -axis 44;
+  defineVirtualDevice -channel lhand_rotX -usage rotX -axis 45;
+  defineVirtualDevice -channel lhand_rotZ -usage rotZ -axis 46;
+  defineVirtualDevice -channel lfingers_rotX -usage rotX -axis 47;
+  defineVirtualDevice -channel lthumb_rotX -usage rotX -axis 48;
+  defineVirtualDevice -channel lthumb_rotZ -usage rotZ -axis 49;
+  defineVirtualDevice -channel rclavicle_rotY -usage rotY -axis 50;
+  defineVirtualDevice -channel rclavicle_rotZ -usage rotZ -axis 51;
+  defineVirtualDevice -channel rhumerus_rotX -usage rotX -axis 52;
+  defineVirtualDevice -channel rhumerus_rotY -usage rotY -axis 53;
+  defineVirtualDevice -channel rhumerus_rotZ -usage rotZ -axis 54;
+  defineVirtualDevice -channel rradius_rotX -usage rotX -axis 55;
+  defineVirtualDevice -channel rwrist_rotY -usage rotY -axis 56;
+  defineVirtualDevice -channel rhand_rotX -usage rotX -axis 57;
+  defineVirtualDevice -channel rhand_rotZ -usage rotZ -axis 58;
+  defineVirtualDevice -channel rfingers_rotX -usage rotX -axis 59;
+  defineVirtualDevice -channel rthumb_rotX -usage rotX -axis 60;
+  defineVirtualDevice -channel rthumb_rotZ -usage rotZ -axis 61;
+  defineVirtualDevice -device "amc_device";
+
+  attachDeviceAttr -device "amc_device" -axis "root_posX" "root.translateX";
+  attachDeviceAttr -device "amc_device" -axis "root_posY" "root.translateY";
+  attachDeviceAttr -device "amc_device" -axis "root_posZ" "root.translateZ";
+  attachDeviceAttr -device "amc_device" -axis "root_rotX" "root.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "root_rotY" "root.rotateY";
+  attachDeviceAttr -device "amc_device" -axis "root_rotZ" "root.rotateZ";
+  attachDeviceAttr -device "amc_device" -axis "lfemur_rotX" "lfemur.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "lfemur_rotY" "lfemur.rotateY";
+  attachDeviceAttr -device "amc_device" -axis "lfemur_rotZ" "lfemur.rotateZ";
+  attachDeviceAttr -device "amc_device" -axis "ltibia_rotX" "ltibia.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "lfoot_rotX" "lfoot.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "lfoot_rotZ" "lfoot.rotateZ";
+  attachDeviceAttr -device "amc_device" -axis "ltoes_rotX" "ltoes.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "rfemur_rotX" "rfemur.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "rfemur_rotY" "rfemur.rotateY";
+  attachDeviceAttr -device "amc_device" -axis "rfemur_rotZ" "rfemur.rotateZ";
+  attachDeviceAttr -device "amc_device" -axis "rtibia_rotX" "rtibia.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "rfoot_rotX" "rfoot.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "rfoot_rotZ" "rfoot.rotateZ";
+  attachDeviceAttr -device "amc_device" -axis "rtoes_rotX" "rtoes.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "lowerback_rotX" "lowerback.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "lowerback_rotY" "lowerback.rotateY";
+  attachDeviceAttr -device "amc_device" -axis "lowerback_rotZ" "lowerback.rotateZ";
+  attachDeviceAttr -device "amc_device" -axis "upperback_rotX" "upperback.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "upperback_rotY" "upperback.rotateY";
+  attachDeviceAttr -device "amc_device" -axis "upperback_rotZ" "upperback.rotateZ";
+  attachDeviceAttr -device "amc_device" -axis "thorax_rotX" "thorax.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "thorax_rotY" "thorax.rotateY";
+  attachDeviceAttr -device "amc_device" -axis "thorax_rotZ" "thorax.rotateZ";
+  attachDeviceAttr -device "amc_device" -axis "lowerneck_rotX" "lowerneck.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "lowerneck_rotY" "lowerneck.rotateY";
+  attachDeviceAttr -device "amc_device" -axis "lowerneck_rotZ" "lowerneck.rotateZ";
+  attachDeviceAttr -device "amc_device" -axis "upperneck_rotX" "upperneck.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "upperneck_rotY" "upperneck.rotateY";
+  attachDeviceAttr -device "amc_device" -axis "upperneck_rotZ" "upperneck.rotateZ";
+  attachDeviceAttr -device "amc_device" -axis "head_rotX" "head.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "head_rotY" "head.rotateY";
+  attachDeviceAttr -device "amc_device" -axis "head_rotZ" "head.rotateZ";
+  attachDeviceAttr -device "amc_device" -axis "lclavicle_rotY" "lclavicle.rotateY";
+  attachDeviceAttr -device "amc_device" -axis "lclavicle_rotZ" "lclavicle.rotateZ";
+  attachDeviceAttr -device "amc_device" -axis "lhumerus_rotX" "lhumerus.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "lhumerus_rotY" "lhumerus.rotateY";
+  attachDeviceAttr -device "amc_device" -axis "lhumerus_rotZ" "lhumerus.rotateZ";
+  attachDeviceAttr -device "amc_device" -axis "lradius_rotX" "lradius.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "lwrist_rotY" "lwrist.rotateY";
+  attachDeviceAttr -device "amc_device" -axis "lhand_rotX" "lhand.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "lhand_rotZ" "lhand.rotateZ";
+  attachDeviceAttr -device "amc_device" -axis "lfingers_rotX" "lfingers.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "lthumb_rotX" "lthumb.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "lthumb_rotZ" "lthumb.rotateZ";
+  attachDeviceAttr -device "amc_device" -axis "rclavicle_rotY" "rclavicle.rotateY";
+  attachDeviceAttr -device "amc_device" -axis "rclavicle_rotZ" "rclavicle.rotateZ";
+  attachDeviceAttr -device "amc_device" -axis "rhumerus_rotX" "rhumerus.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "rhumerus_rotY" "rhumerus.rotateY";
+  attachDeviceAttr -device "amc_device" -axis "rhumerus_rotZ" "rhumerus.rotateZ";
+  attachDeviceAttr -device "amc_device" -axis "rradius_rotX" "rradius.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "rwrist_rotY" "rwrist.rotateY";
+  attachDeviceAttr -device "amc_device" -axis "rhand_rotX" "rhand.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "rhand_rotZ" "rhand.rotateZ";
+  attachDeviceAttr -device "amc_device" -axis "rfingers_rotX" "rfingers.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "rthumb_rotX" "rthumb.rotateX";
+  attachDeviceAttr -device "amc_device" -axis "rthumb_rotZ" "rthumb.rotateZ";
+}
+
+proc int amcDeviceExists()
+{
+  string $all_devices[] = `listInputDevices`;
+
+  for ($device in $all_devices) {
+    if ($device=="amc_device")
+      return 1;
+  }
+
+  return 0;
+}
+
+proc deleteAMCDevice()
+{
+  defineVirtualDevice -device "amc_device" -undefine;
+}
+
+proc importAMC()
+{
+  if (amcDeviceExists())
+    deleteAMCDevice();
+
+  createAMCDevice;
+  print("\n// Select MOV file to import.\n");
+
+  string $mov_file = `fileDialog`;
+
+  if (""!=$mov_file) {
+    currentUnit -time ntscf;
+    readTake -device "amc_device" -angle "degree" -linear "inch" -take $mov_file;
+    applyTake -device "amc_device";
+    currentTime -edit 1;
+    playbackOptions -minTime 1;
+    fitAllPanels -all;
+  }
+
+  deleteAMCDevice;
+}
+
+importAMC;
