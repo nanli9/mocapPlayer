@@ -13,6 +13,7 @@ Fl_Window * main_window = (Fl_Window *)0;
 // button group - load ASF/AMC data
 Fl_Button * loadSkeleton_button = (Fl_Button *)0;
 Fl_Button * loadMotion_button = (Fl_Button *)0;
+Fl_Button * loadMesh_button = (Fl_Button *)0;
 Fl_Button * reloadMotion_button = (Fl_Button *)0;
 Fl_Button * resetScene_button = (Fl_Button *)0;
 
@@ -73,7 +74,10 @@ Fl_Window * make_window()
         Fl_Button * o = resetScene_button = new Fl_Button(400, 495, 120, 40, "Reset Scene");
         o->callback((Fl_Callback *)resetScene_callback);
       }
-
+      {
+          Fl_Button* o = loadMesh_button = new Fl_Button(530, 495, 120, 40, "Load Mesh");
+          o->callback((Fl_Callback*)load_callback);
+      }
       { 
         Fl_Light_Button* o = record_button = new Fl_Light_Button(380, 575, 40, 25, "R");
         o->callback((Fl_Callback *)record_callback, (void*)(0));

@@ -14,6 +14,14 @@ Revision 3 - Jernej Barbic and Yili Zhao, Feb, 2012
 #include <FL/glu.h>
 #include "skeleton.h"
 #include "motion.h"
+#include "Mesh.h"
+
+
+#include <assimp/cimport.h>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+#include <assimp/Importer.hpp>
+#include <assimp/matrix4x4.h>
 
 class DisplaySkeleton 
 {
@@ -36,6 +44,9 @@ public:
   void LoadSkeleton(Skeleton * pSkeleton);
   //set motion for display
   void LoadMotion(Motion * pMotion);
+
+  void LoadMesh(Mesh* pMesh);
+
 
   //display the scene (skeleton, ground plane ....)
   void Render(RenderMode renderMode);
@@ -62,9 +73,13 @@ protected:
 
   int m_SpotJoint;		//joint whose local coordinate framework is drawn
   int numSkeletons;
+  int numMeshes;
   Skeleton *m_pSkeleton[MAX_SKELS];		//pointer to current skeleton
   Motion *m_pMotion[MAX_SKELS];		//pointer to current motion	
   GLuint m_BoneList[MAX_SKELS];		//display list with bones
+  Mesh *m_MeshList[MAX_SKELS];		//display list with bones
+  aiVector3D* verticesList;
+
 
   static float jointColors[NUMBER_JOINT_COLORS][3];
 };

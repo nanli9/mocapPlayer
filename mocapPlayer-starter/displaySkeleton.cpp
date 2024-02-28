@@ -27,6 +27,7 @@ DisplaySkeleton::DisplaySkeleton(void)
 {
   m_SpotJoint = -1;
   numSkeletons = 0;
+  numMeshes = 0;
   for(int skeletonIndex = 0; skeletonIndex < MAX_SKELS; skeletonIndex++)
   {
     m_pSkeleton[skeletonIndex] = NULL;
@@ -292,14 +293,15 @@ void DisplaySkeleton::Render(RenderMode renderMode_)
 
   //Translate the root to the correct position (it is (0,0,0) if no motion is loaded)
   //   glTranslatef(m_pSkeleton->m_RootPos[0], m_pSkeleton->m_RootPos[1], m_pSkeleton->m_RootPos[2]);
-
+  double translation[3];
+  double rotationAngle[3];
   //draw the skeleton starting from the root
   for (int i = 0; i < numSkeletons; i++)
   {
     glPushMatrix();
-    double translation[3];
+    //double translation[3];
     m_pSkeleton[i]->GetTranslation(translation);
-    double rotationAngle[3];
+    //double rotationAngle[3];
     m_pSkeleton[i]->GetRotationAngle(rotationAngle);
 
     glTranslatef(float(MOCAP_SCALE * translation[0]), float(MOCAP_SCALE * translation[1]), float(MOCAP_SCALE * translation[2]));
@@ -311,6 +313,28 @@ void DisplaySkeleton::Render(RenderMode renderMode_)
     glPopMatrix();
   }
   glPopMatrix();
+
+
+  glPushMatrix();
+  for (int i = 0; i < numMeshes; i++)
+  {
+      glPointSize(5);
+      glScalef(0.3, 0.3, 0.3);
+      glTranslatef(translation[0], translation[1], translation[2]);
+      glBegin(GL_POINTS);
+      for (int j = 0; j < m_MeshList[numMeshes - 1]->verticesNum; j++)
+      {
+          aiVector3D pos = (m_MeshList[numMeshes - 1]->verticesList)[j];
+          double x = pos.x;
+          double y = pos.y;
+          double z = pos.z;
+          glVertex3f(x, y , z );
+      }
+      glEnd();
+
+  }
+  glPopMatrix();
+
 }
 
 void DisplaySkeleton::LoadMotion(Motion * pMotion)
@@ -320,6 +344,14 @@ void DisplaySkeleton::LoadMotion(Motion * pMotion)
     delete m_pMotion[numSkeletons - 1];
   m_pMotion[numSkeletons - 1] = pMotion;
 }
+
+void DisplaySkeleton::LoadMesh(Mesh* pMesh)
+{
+    printf("Parsing %d meshes\n\n", pMesh->verticesNum);
+    m_MeshList[numMeshes] = pMesh;
+    numMeshes++;
+}
+
 
 //Set skeleton for display
 void DisplaySkeleton::LoadSkeleton(Skeleton *pSkeleton)

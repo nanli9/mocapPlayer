@@ -29,6 +29,7 @@ extern void play_callback(Fl_Button *, void *);
 
 extern Fl_Button * loadSkeleton_button;
 extern Fl_Button * loadMotion_button;
+extern Fl_Button * loadMesh_button;
 extern void load_callback(Fl_Button *, void *);
 
 extern Fl_Button * reloadMotion_button;
