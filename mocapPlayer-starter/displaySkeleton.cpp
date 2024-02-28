@@ -235,6 +235,23 @@ void DisplaySkeleton::DrawBone(Bone *pBone,int skelNum)
   // Finally, translate the bone, depending on its length and direction
   // This step corresponds to doing: M_k+1 = ModelviewMatrix += T_k+1
   glTranslatef(float(tx), float(ty), float(tz));
+
+
+  glPointSize(5);
+  /*glScalef(0.3, 0.3, 0.3);
+  glTranslatef(translation[0], translation[1], translation[2]);*/
+  glBegin(GL_POINTS);
+  for (int j = 0; j < pBone->verticesList.size(); j++)
+  {
+      aiVector3D pos = (m_MeshList[numMeshes - 1]->verticesList)[pBone->verticesList[j].mVertexId];
+      double x = pos.x;
+      double y = pos.y;
+      double z = pos.z;
+      glVertex3f(x, y, z);
+  }
+  glEnd();
+
+
 }
 
 void DisplaySkeleton::SetShadowingModelviewMatrix(double ground[4], double light[4])
@@ -315,7 +332,7 @@ void DisplaySkeleton::Render(RenderMode renderMode_)
   glPopMatrix();
 
 
-  glPushMatrix();
+  /*glPushMatrix();
   for (int i = 0; i < numMeshes; i++)
   {
       glPointSize(5);
@@ -333,7 +350,7 @@ void DisplaySkeleton::Render(RenderMode renderMode_)
       glEnd();
 
   }
-  glPopMatrix();
+  glPopMatrix();*/
 
 }
 
@@ -349,6 +366,8 @@ void DisplaySkeleton::LoadMesh(Mesh* pMesh)
 {
     printf("Parsing %d meshes\n\n", pMesh->verticesNum);
     m_MeshList[numMeshes] = pMesh;
+    //bind the vertices to the skeleton
+    m_pSkeleton[numSkeletons-1]->bindVertices(pMesh);
     numMeshes++;
 }
 

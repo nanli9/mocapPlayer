@@ -11,20 +11,16 @@
 #include <assimp/Importer.hpp>
 #include <assimp/matrix4x4.h>
 #include <vector>
+#include <map>
 
 class Mesh
 {
 public:
 	std::vector<aiVector3D> verticesList;
+	std::map<std::string,std::vector<aiVertexWeight>> vertices_bone_map;
 	int verticesNum;
 	Mesh(char* fbx_filename);
 };
-
-
-
-
-
-
 
 #endif // !MESH_H
 

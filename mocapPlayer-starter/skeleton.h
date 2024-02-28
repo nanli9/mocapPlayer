@@ -13,9 +13,10 @@ Revision 3 - Jernej Barbic and Yili Zhao, Feb, 2012
 #define _SKELETON_H
 
 #include "posture.h"
+#include "Mesh.h"
 
 // this structure defines the property of each bone segment, including its connection to other bones,
-// DOF (degrees of freedom), relative orientation and distance to the outboard bone 
+// DOF (degrees of freedom), relative orientation and distance to the outboard bone
 struct Bone 
 {
   struct Bone *sibling;	// Pointer to the sibling (branch bone) in the hierarchy tree 
@@ -51,6 +52,8 @@ struct Bone
   double tx,ty,tz;
   double tl;
   int dofo[8];
+  //mesh vertices bind to it 
+  std::vector<aiVertexWeight> verticesList;
 };
 
 
@@ -90,6 +93,8 @@ public:
 
   int numBonesInSkel(Bone bone);
   int movBonesInSkel(Bone bone);
+  void bindVertices(Mesh* mesh);
+  void bindVertices(Mesh* mesh,Bone* bone);
 
 protected:
 

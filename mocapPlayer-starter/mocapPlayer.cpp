@@ -367,18 +367,21 @@ void load_callback(Fl_Button *button, void *)
   }
   if (button == loadMesh_button)
   {
-      /*if ((lastSkeleton >= 0) && (lastSkeleton >= lastMotion))
+      if ((lastSkeleton >= 0) && (lastSkeleton >= lastMotion))
       {
-         
-      } */
-      char* filename = fl_file_chooser("Select filename", "*.FBX", "");
-      if (filename != NULL)
-      {
-          printf("Load mesh\n");
-          Mesh* pMesh = new Mesh(filename);
-          displayer.LoadMesh(pMesh);
-          glwindow->redraw();
-      }
+          char* filename = fl_file_chooser("Select filename", "*.FBX", "");
+          if (filename != NULL)
+          {
+              printf("Load mesh\n");
+              Mesh* pMesh = new Mesh(filename);
+              displayer.LoadMesh(pMesh);
+
+
+
+              glwindow->redraw();
+          }
+      } 
+      
   }
   glwindow->redraw();
 }

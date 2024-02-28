@@ -25,7 +25,20 @@ Mesh::Mesh(char* fbx_filename)
         {
             verticesList.push_back(pMesh->mVertices[j]);
         }
+        if(pMesh->HasBones()) 
+        {
+            for (unsigned int j = 0; j < pMesh->mNumBones; j++) {
+                aiBone* bone = (pMesh->mBones)[j];
+                std::vector<aiVertexWeight> list;
+                for (int k = 0; k < bone->mNumWeights; k++)
+                    list.push_back((bone->mWeights)[k]);
+                vertices_bone_map.insert({bone->mName.data,list});
+            }
+
+
+        }
     }
+    
     
 
 }
