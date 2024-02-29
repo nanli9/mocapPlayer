@@ -60,7 +60,8 @@ public:
 
   void Reset(void);
   void DrawMesh(int skelNum);
-
+  int GetNumMesh() { return numMeshes;};
+  void GenShader();
 protected:
   RenderMode renderMode;
   // Draw a particular bone
@@ -81,7 +82,7 @@ protected:
   Motion *m_pMotion[MAX_SKELS];		//pointer to current motion	
   GLuint m_BoneList[MAX_SKELS];		//display list with bones
   Mesh *m_MeshList[MAX_SKELS];		//display list with bones
-  std::map<int, float*> vertices_modelview_map;  //store each modelview matrix and vertices
+  //std::map<int, float*> vertices_modelview_map;  //store each modelview matrix and vertices
 
   static float jointColors[NUMBER_JOINT_COLORS][3];
 };

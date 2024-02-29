@@ -387,8 +387,6 @@ void load_callback(Fl_Button *button, void *)
               Mesh* pMesh = new Mesh(filename);
               displayer.LoadMesh(pMesh);
 
-              //displayer.DrawMesh(0);
-
               glwindow->redraw();
           }
       } 
@@ -940,6 +938,7 @@ void Player_Gl_Window::draw()
 
 int main(int argc, char **argv) 
 {
+
   // Initialize form, sliders and buttons
   form = make_window();
 
@@ -966,6 +965,8 @@ int main(int argc, char **argv)
   form->show();
   glwindow->show(); // glwindow is initialized when the form is built
   performanceCounter.StopCounter();
+
+  displayer.GenShader();
 
   if (argc > 2)
   {
@@ -1015,6 +1016,8 @@ int main(int argc, char **argv)
     }
     else
       printf("Load a skeleton first.\n");
+    /*if (displayer.GetNumMesh())
+        displayer.GenShader();*/
     framesIncrementDoublePrecision = 1.0;            // Current frame and frame increment
     playButton = ON;
     repeatButton = OFF;

@@ -133,50 +133,88 @@ void DisplaySkeleton::SetDisplayList(int skeletonID, Bone *bone, GLuint *pBoneLi
     glEndList();
   }
 }
-void DisplaySkeleton::DrawMesh(int skelNum)
+void DisplaySkeleton::GenShader()
 {
-    //glCreateShader(GL_VERTEX_SHADER);
-    glCreateShader(GL_VERTEX_SHADER);
-    glPushMatrix();
-    glPointSize(5);
-    /*glScalef(0.3, 0.3, 0.3);
-    glTranslatef(translation[0], translation[1], translation[2]);*/
-
-    //m_MeshList[0]->verticesList;
-    for (int i = 0; i < m_MeshList[0]->verticesNum; i++)
+    GLint vertex_shader_compiled, fragment_shader_compiled;
+    GLint linked;
+    GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+    GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+    const char* fs_source[] =
     {
-        //glMultMatrixd((double*)vertices_modelview_map.find(i)->second);
-        float m[4][4];
-        for (int j = 0; j < 4; j++)
-        {
-            for (int k = 0; k < 4; k++)
-            {
-                m[j][k] = (vertices_modelview_map.at(i))[j * 4 + k];
-            }
-        }
-        glPushMatrix();
-        glMultMatrixf((float*)m);
-        aiVector3D pos = (m_MeshList[numMeshes - 1]->verticesList)[i];
-        float x = pos.x;
-        float y = pos.y;
-        float z = pos.z;
-        glBegin(GL_POINTS);
-        glVertex3f(x, y, z);
-        glEnd();
-        glPopMatrix();
+        "#version 120"
+        "uniform vec3 uColor;"
+        "void main(void) {        "
+        "  gl_FragColor = vec4(uColor, 1.0);"
+        "}"
+    };
+    const char* vs_source[] = {
+
+        "void main(void)"
+        "{"
+        "  gl_Position = gl_Vertex;"
+        "}"
+    };
+    glShaderSource(vertex_shader, 1, vs_source, NULL);
+    glShaderSource(fragment_shader, 1, fs_source, NULL);
+    glCompileShader(vertex_shader);
+    glCompileShader(fragment_shader);
+    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &vertex_shader_compiled);
+    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &fragment_shader_compiled);
+    if (!vertex_shader_compiled)
+    {
+        fprintf(stderr, "Error in vertex shader\n");
+    }
+    if (!fragment_shader_compiled)
+    {
+        fprintf(stderr, "Error in fragment shader\n");
     }
 
 
-    /*for (int j = 0; j < pBone->verticesList.size(); j++)
-    {
-        aiVector3D pos = (m_MeshList[numMeshes - 1]->verticesList)[pBone->verticesList[j].mVertexId];
-        double x = pos.x;
-        double y = pos.y;
-        double z = pos.z;
-        glVertex3f(x, y, z);
-    }*/
+}
 
-    glPopMatrix();
+void DisplaySkeleton::DrawMesh(int skelNum)
+{
+    //glCreateShader(GL_VERTEX_SHADER);
+    //glPushMatrix();
+    //glPointSize(5);
+    ///*glScalef(0.3, 0.3, 0.3);
+    //glTranslatef(translation[0], translation[1], translation[2]);*/
+
+    ////m_MeshList[0]->verticesList;
+    //for (int i = 0; i < m_MeshList[0]->verticesNum; i++)
+    //{
+    //    //glMultMatrixd((double*)vertices_modelview_map.find(i)->second);
+    //    float m[4][4];
+    //    for (int j = 0; j < 4; j++)
+    //    {
+    //        for (int k = 0; k < 4; k++)
+    //        {
+    //            m[j][k] = (vertices_modelview_map.at(i))[j * 4 + k];
+    //        }
+    //    }
+    //    glPushMatrix();
+    //    glMultMatrixf((float*)m);
+    //    aiVector3D pos = (m_MeshList[numMeshes - 1]->verticesList)[i];
+    //    float x = pos.x;
+    //    float y = pos.y;
+    //    float z = pos.z;
+    //    glBegin(GL_POINTS);
+    //    glVertex3f(x, y, z);
+    //    glEnd();
+    //    glPopMatrix();
+    //}
+
+
+    ///*for (int j = 0; j < pBone->verticesList.size(); j++)
+    //{
+    //    aiVector3D pos = (m_MeshList[numMeshes - 1]->verticesList)[pBone->verticesList[j].mVertexId];
+    //    double x = pos.x;
+    //    double y = pos.y;
+    //    double z = pos.z;
+    //    glVertex3f(x, y, z);
+    //}*/
+
+    //glPopMatrix();
 }
 /*
   Define M_k = Modelview matrix at the kth node (bone) in the heirarchy
@@ -283,28 +321,28 @@ void DisplaySkeleton::DrawBone(Bone *pBone,int skelNum)
     glCallList(m_BoneList[skelNum] + pBone->idx);
   }
   //should draw mesh here 
-  if (numMeshes)
-  {
-      //DrawMesh(0);
-  }
-  GLfloat modelview[16];
-  glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
-  for (int i = 0; i < pBone->verticesList.size(); i++)
-  {
-      if (vertices_modelview_map.find((pBone->verticesList)[i].mVertexId) != vertices_modelview_map.end())
-      {
-          for (int j = 0; j < 16; j++)
-              vertices_modelview_map.at((pBone->verticesList)[i].mVertexId)[j] += modelview[j] * pBone->verticesList[i].mWeight * 0.3;
-      }
-      else
-      {
-          float* tmp = new float[16];
-          for (int j = 0; j < 16; j++)
-              tmp[j] = modelview[j] * pBone->verticesList[i].mWeight*0.3;
-          vertices_modelview_map.insert({ (pBone->verticesList)[i].mVertexId,tmp });
+  //if (numMeshes)
+  //{
+  //    //DrawMesh(0);
+  //}
+  //GLfloat modelview[16];
+  //glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
+  //for (int i = 0; i < pBone->verticesList.size(); i++)
+  //{
+  //    if (vertices_modelview_map.find((pBone->verticesList)[i].mVertexId) != vertices_modelview_map.end())
+  //    {
+  //        for (int j = 0; j < 16; j++)
+  //            vertices_modelview_map.at((pBone->verticesList)[i].mVertexId)[j] += modelview[j] * pBone->verticesList[i].mWeight * 0.3;
+  //    }
+  //    else
+  //    {
+  //        float* tmp = new float[16];
+  //        for (int j = 0; j < 16; j++)
+  //            tmp[j] = modelview[j] * pBone->verticesList[i].mWeight*0.3;
+  //        vertices_modelview_map.insert({ (pBone->verticesList)[i].mVertexId,tmp });
 
-      }
-  }
+  //    }
+  //}
 
   glPopMatrix(); 
 
@@ -395,11 +433,7 @@ void DisplaySkeleton::Render(RenderMode renderMode_)
     glPopMatrix();
 
   }
-  glPopMatrix();
-  if (numMeshes)
-      DrawMesh(0);
-  
-
+  glPopMatrix(); 
   /*glPushMatrix();
   for (int i = 0; i < numMeshes; i++)
   {
