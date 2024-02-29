@@ -24,6 +24,7 @@ Revision 3 - Jernej Barbic and Yili Zhao, Feb, 2012
 #include "motion.h"
 #include "displaySkeleton.h"
 #include "transform.h"
+#include "Matrix4x4.h"
 
 float DisplaySkeleton::jointColors[NUMBER_JOINT_COLORS][3] =
 {
@@ -152,7 +153,22 @@ void DisplaySkeleton::GenShader()
     const char* vs_source[] = {
         "uniform mat4 modelview;"
         "uniform mat4 projection;"
-        "uniform mat4 boneMatrix;"
+        "uniform mat4 boneMatrix1;"
+        "uniform mat4 boneMatrix2;"
+        "uniform mat4 boneMatrix3;"
+        "uniform mat4 boneMatrix4;"
+        "uniform mat4 boneMatrix5;"
+        "uniform mat4 boneMatrix6;"
+        "uniform mat4 boneMatrix7;"
+        "uniform mat4 boneMatrix8;"
+        "uniform mat4 boneMatrix9;"
+        "uniform mat4 boneMatrix10;"
+        "uniform mat4 boneMatrix11;"
+        "uniform mat4 boneMatrix12;"
+        "uniform mat4 boneMatrix13;"
+        "uniform mat4 boneMatrix14;"
+        "uniform mat4 boneMatrix15;"
+      
         "in vec3 pos;"
         "int boneIndex1;"
         "int boneIndex2;"
@@ -259,8 +275,6 @@ void DisplaySkeleton::DrawMesh(int skelNum)
 
     //glPushMatrix();
 
-    GLuint buffer;
-
     float vertices[] = {
         -0.5f, -0.5f, -0.5f,  
          0.5f, -0.5f, -0.5f,  
@@ -304,17 +318,22 @@ void DisplaySkeleton::DrawMesh(int skelNum)
         -0.5f,  0.5f,  0.5f,  
         -0.5f,  0.5f, -0.5f  
     };
-
-
+    //put mesh vertices into the buffer
+    for (int i = 0; i < m_MeshList[0]->verticesList.size(); i++)
+    {
+        verticesBuffer.push_back(m_MeshList[0]->verticesList[i].x);
+        verticesBuffer.push_back(m_MeshList[0]->verticesList[i].y);
+        verticesBuffer.push_back(m_MeshList[0]->verticesList[i].z);
+    }
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, verticesBuffer.size() * sizeof(double), &verticesBuffer[0], GL_STATIC_DRAW);
 
     glBindVertexArray(VAO);
     // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_DOUBLE, GL_FALSE, 3 * sizeof(double), (void*)0);
     glEnableVertexAttribArray(0);
 
 
@@ -331,18 +350,19 @@ void DisplaySkeleton::DrawMesh(int skelNum)
     GLfloat modelview[16],projection[16];
     glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
     glGetFloatv(GL_PROJECTION_MATRIX, projection);
+    Matrix4x4 modelview_matrix(modelview);
+    Matrix4x4 projection_matrix(projection);
 
-
+    //set uniform
+    glUniformMatrix4fv(modelview_index, 1, GL_FALSE, &modelview_matrix.p[0][0]);
+    glUniformMatrix4fv(projection_index, 1, GL_FALSE, &projection_matrix.p[0][0]);
 
 
     glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-
+    glPointSize(5);
+    glDrawArrays(GL_POINTS, 0, m_MeshList[0]->verticesList.size());
 
     glUseProgram(0);
-
 
     //glPopMatrix();
 }

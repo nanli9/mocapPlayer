@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\mocapPlayer-starter\displaySkeleton.cpp" />
     <ClCompile Include="..\..\..\mocapPlayer-starter\interface.cpp" />
+    <ClCompile Include="..\..\..\mocapPlayer-starter\matrix4x4.cpp" />
     <ClCompile Include="..\..\..\mocapPlayer-starter\Mesh.cpp" />
     <ClCompile Include="..\..\..\mocapPlayer-starter\mocapPlayer.cpp" />
     <ClCompile Include="..\..\..\mocapPlayer-starter\motion.cpp" />
@@ -28,6 +29,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\mocapPlayer-starter\displaySkeleton.h" />
     <ClInclude Include="..\..\..\mocapPlayer-starter\interface.h" />
+    <ClInclude Include="..\..\..\mocapPlayer-starter\matrix4x4.h" />
     <ClInclude Include="..\..\..\mocapPlayer-starter\Mesh.h" />
     <ClInclude Include="..\..\..\mocapPlayer-starter\mocapPlayer.h" />
     <ClInclude Include="..\..\..\mocapPlayer-starter\motion.h" />

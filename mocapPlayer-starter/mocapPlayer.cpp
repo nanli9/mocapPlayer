@@ -246,7 +246,8 @@ void Redisplay()
     glDisable(GL_FOG);
     displayer.Render(DisplaySkeleton::BONES_AND_LOCAL_FRAMES);
   }
-  displayer.DrawMesh(0);
+  if(displayer.GetNumMesh())
+    displayer.DrawMesh(0);
 
   glPopMatrix(); // restore current transformation matrix
 }

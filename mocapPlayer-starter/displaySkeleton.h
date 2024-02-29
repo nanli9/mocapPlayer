@@ -81,8 +81,10 @@ protected:
   Skeleton *m_pSkeleton[MAX_SKELS];		//pointer to current skeleton
   Motion *m_pMotion[MAX_SKELS];		//pointer to current motion	
   GLuint m_BoneList[MAX_SKELS];		//display list with bones
-  Mesh *m_MeshList[MAX_SKELS];		//display list with bones
+  Mesh *m_MeshList[MAX_SKELS];		//display list with meshes
+  std::vector<double> verticesBuffer;
   //std::map<int, float*> vertices_modelview_map;  //store each modelview matrix and vertices
+
 
   //vertex shader variable here
   GLuint vertex_shader;
