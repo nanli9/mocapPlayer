@@ -59,11 +59,14 @@ public:
   Motion * GetSkeletonMotion(int skeletonIndex);
 
   void Reset(void);
-  
+  void DrawMesh(int skelNum);
+
 protected:
   RenderMode renderMode;
   // Draw a particular bone
   void DrawBone(Bone *ptr, int skelNum);
+  //draw mesh
+
   // Draw the skeleton hierarchy
   void Traverse(Bone *ptr, int skelNum);
   // Model matrix for the shadow
@@ -78,8 +81,7 @@ protected:
   Motion *m_pMotion[MAX_SKELS];		//pointer to current motion	
   GLuint m_BoneList[MAX_SKELS];		//display list with bones
   Mesh *m_MeshList[MAX_SKELS];		//display list with bones
-  aiVector3D* verticesList;
-
+  std::map<int, float*> vertices_modelview_map;  //store each modelview matrix and vertices
 
   static float jointColors[NUMBER_JOINT_COLORS][3];
 };

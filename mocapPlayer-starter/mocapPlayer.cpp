@@ -333,6 +333,8 @@ void load_callback(Fl_Button *button, void *)
         // Set root position to (0, 0, 0)
         pSkeleton->setBasePosture();
         displayer.LoadSkeleton(pSkeleton);
+        //const GLubyte* a = glGetString(GL_VERSION);
+        
         glwindow->redraw();
       }
     }
@@ -376,7 +378,7 @@ void load_callback(Fl_Button *button, void *)
               Mesh* pMesh = new Mesh(filename);
               displayer.LoadMesh(pMesh);
 
-
+              //displayer.DrawMesh(0);
 
               glwindow->redraw();
           }

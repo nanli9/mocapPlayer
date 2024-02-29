@@ -11,6 +11,8 @@ Revision 3 - Jernej Barbic and Yili Zhao, Feb, 2012
 #include <FL/gl.h>
 #include <FL/glut.H>
 
+
+
 #include "skeleton.h"
 #include "motion.h"
 #include "displaySkeleton.h"
@@ -124,7 +126,49 @@ void DisplaySkeleton::SetDisplayList(int skeletonID, Bone *bone, GLuint *pBoneLi
     glEndList();
   }
 }
+void DisplaySkeleton::DrawMesh(int skelNum)
+{
+    glPushMatrix();
+    glPointSize(5);
+    /*glScalef(0.3, 0.3, 0.3);
+    glTranslatef(translation[0], translation[1], translation[2]);*/
 
+    //m_MeshList[0]->verticesList;
+    for (int i = 0; i < m_MeshList[0]->verticesNum; i++)
+    {
+        //glMultMatrixd((double*)vertices_modelview_map.find(i)->second);
+        float m[4][4];
+        for (int j = 0; j < 4; j++)
+        {
+            for (int k = 0; k < 4; k++)
+            {
+                m[j][k] = (vertices_modelview_map.at(i))[j * 4 + k];
+            }
+        }
+        glPushMatrix();
+        glMultMatrixf((float*)m);
+        aiVector3D pos = (m_MeshList[numMeshes - 1]->verticesList)[i];
+        float x = pos.x;
+        float y = pos.y;
+        float z = pos.z;
+        glBegin(GL_POINTS);
+        glVertex3f(x, y, z);
+        glEnd();
+        glPopMatrix();
+    }
+
+
+    /*for (int j = 0; j < pBone->verticesList.size(); j++)
+    {
+        aiVector3D pos = (m_MeshList[numMeshes - 1]->verticesList)[pBone->verticesList[j].mVertexId];
+        double x = pos.x;
+        double y = pos.y;
+        double z = pos.z;
+        glVertex3f(x, y, z);
+    }*/
+
+    glPopMatrix();
+}
 /*
   Define M_k = Modelview matrix at the kth node (bone) in the heirarchy
   M_k stores the transformation matrix of the kth bone in world coordinates
@@ -229,6 +273,29 @@ void DisplaySkeleton::DrawBone(Bone *pBone,int skelNum)
     glRotatef(float(theta*180./M_PI), float(r_axis[0]), float(r_axis[1]), float(r_axis[2]));
     glCallList(m_BoneList[skelNum] + pBone->idx);
   }
+  //should draw mesh here 
+  if (numMeshes)
+  {
+      //DrawMesh(0);
+  }
+  GLfloat modelview[16];
+  glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
+  for (int i = 0; i < pBone->verticesList.size(); i++)
+  {
+      if (vertices_modelview_map.find((pBone->verticesList)[i].mVertexId) != vertices_modelview_map.end())
+      {
+          for (int j = 0; j < 16; j++)
+              vertices_modelview_map.at((pBone->verticesList)[i].mVertexId)[j] += modelview[j] * pBone->verticesList[i].mWeight * 0.3;
+      }
+      else
+      {
+          float* tmp = new float[16];
+          for (int j = 0; j < 16; j++)
+              tmp[j] = modelview[j] * pBone->verticesList[i].mWeight*0.3;
+          vertices_modelview_map.insert({ (pBone->verticesList)[i].mVertexId,tmp });
+
+      }
+  }
 
   glPopMatrix(); 
 
@@ -236,21 +303,7 @@ void DisplaySkeleton::DrawBone(Bone *pBone,int skelNum)
   // This step corresponds to doing: M_k+1 = ModelviewMatrix += T_k+1
   glTranslatef(float(tx), float(ty), float(tz));
 
-
-  glPointSize(5);
-  /*glScalef(0.3, 0.3, 0.3);
-  glTranslatef(translation[0], translation[1], translation[2]);*/
-  glBegin(GL_POINTS);
-  for (int j = 0; j < pBone->verticesList.size(); j++)
-  {
-      aiVector3D pos = (m_MeshList[numMeshes - 1]->verticesList)[pBone->verticesList[j].mVertexId];
-      double x = pos.x;
-      double y = pos.y;
-      double z = pos.z;
-      glVertex3f(x, y, z);
-  }
-  glEnd();
-
+  
 
 }
 
@@ -294,6 +347,7 @@ void DisplaySkeleton::Traverse(Bone *ptr,int skelNum)
   {
     glPushMatrix();
     DrawBone(ptr,skelNum);
+
     Traverse(ptr->child,skelNum);
     glPopMatrix();
     Traverse(ptr->sibling,skelNum);
@@ -327,10 +381,15 @@ void DisplaySkeleton::Render(RenderMode renderMode_)
     glRotatef(float(rotationAngle[2]), 0.0f, 0.0f, 1.0f);
     Traverse(m_pSkeleton[i]->getRoot(),i);
 
+    
+
     glPopMatrix();
+
   }
   glPopMatrix();
-
+  if (numMeshes)
+      DrawMesh(0);
+  
 
   /*glPushMatrix();
   for (int i = 0; i < numMeshes; i++)

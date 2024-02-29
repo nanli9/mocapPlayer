@@ -16,7 +16,7 @@
 class Mesh
 {
 public:
-	std::vector<aiVector3D> verticesList;
+	std::vector<aiVector3D> verticesList;//store vertices pos
 	std::map<std::string,std::vector<aiVertexWeight>> vertices_bone_map;
 	int verticesNum;
 	Mesh(char* fbx_filename);
