@@ -84,6 +84,13 @@ protected:
   Mesh *m_MeshList[MAX_SKELS];		//display list with bones
   //std::map<int, float*> vertices_modelview_map;  //store each modelview matrix and vertices
 
+  //vertex shader variable here
+  GLuint vertex_shader;
+  GLuint fragment_shader;
+  GLuint mesh_shader_program;
+  GLuint VAO, VBO;
+
+
   static float jointColors[NUMBER_JOINT_COLORS][3];
 };
 

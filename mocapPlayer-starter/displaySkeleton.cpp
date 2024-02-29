@@ -137,21 +137,31 @@ void DisplaySkeleton::GenShader()
 {
     GLint vertex_shader_compiled, fragment_shader_compiled;
     GLint linked;
-    GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+    mesh_shader_program = glCreateProgram();
+
+    vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+    fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+    //fs can be skipped
     const char* fs_source[] =
     {
-        "#version 120"
         "uniform vec3 uColor;"
         "void main(void) {        "
         "  gl_FragColor = vec4(uColor, 1.0);"
         "}"
     };
     const char* vs_source[] = {
+        "uniform mat4 modelview;"
+        "uniform mat4 projection;"
+        "uniform mat4 boneMatrix;"
+        "in vec3 pos;"
+        "int boneIndex1;"
+        "int boneIndex2;"
+        "int boneIndex3;"
+        "int boneIndex4;"
 
-        "void main(void)"
+        "void main()"
         "{"
-        "  gl_Position = gl_Vertex;"
+        "  gl_Position =  projection * modelview * vec4(pos,1.0);"
         "}"
     };
     glShaderSource(vertex_shader, 1, vs_source, NULL);
@@ -162,13 +172,42 @@ void DisplaySkeleton::GenShader()
     glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &fragment_shader_compiled);
     if (!vertex_shader_compiled)
     {
-        fprintf(stderr, "Error in vertex shader\n");
+        GLint length;
+        GLchar* log;
+        glGetShaderiv(vertex_shader,GL_INFO_LOG_LENGTH,&length);
+
+        log = (GLchar*)malloc(length);
+        glGetShaderInfoLog(vertex_shader,length,&length,log);
+        fprintf(stderr, "compile log = '%s'\n", log);
+        free(log);
+
     }
     if (!fragment_shader_compiled)
     {
         fprintf(stderr, "Error in fragment shader\n");
     }
+    //link the vertex shader
+    glAttachShader(mesh_shader_program,vertex_shader);
 
+    glLinkProgram(mesh_shader_program);
+
+    glGetProgramiv(mesh_shader_program,GL_LINK_STATUS,&linked);
+
+    if (!linked)
+    {
+        GLint length;
+        GLchar* log;
+        glGetProgramiv(mesh_shader_program, GL_INFO_LOG_LENGTH, &length);
+
+        log = (GLchar*)malloc(length);
+        glGetProgramInfoLog(mesh_shader_program, length, &length, log);
+        fprintf(stderr, "link log = '%s'\n", log);
+        free(log);
+    }
+    else
+    {
+        printf("link success");
+    }
 
 }
 
@@ -213,6 +252,97 @@ void DisplaySkeleton::DrawMesh(int skelNum)
     //    double z = pos.z;
     //    glVertex3f(x, y, z);
     //}*/
+
+    //glPopMatrix();
+
+
+
+    //glPushMatrix();
+
+    GLuint buffer;
+
+    float vertices[] = {
+        -0.5f, -0.5f, -0.5f,  
+         0.5f, -0.5f, -0.5f,  
+         0.5f,  0.5f, -0.5f, 
+         0.5f,  0.5f, -0.5f,  
+        -0.5f,  0.5f, -0.5f,  
+        -0.5f, -0.5f, -0.5f,  
+
+        -0.5f, -0.5f,  0.5f,  
+         0.5f, -0.5f,  0.5f,  
+         0.5f,  0.5f,  0.5f,  
+         0.5f,  0.5f,  0.5f,  
+        -0.5f,  0.5f,  0.5f,  
+        -0.5f, -0.5f,  0.5f,  
+
+        -0.5f,  0.5f,  0.5f,  
+        -0.5f,  0.5f, -0.5f,  
+        -0.5f, -0.5f, -0.5f,  
+        -0.5f, -0.5f, -0.5f,  
+        -0.5f, -0.5f,  0.5f,  
+        -0.5f,  0.5f,  0.5f,  
+
+         0.5f,  0.5f,  0.5f,  
+         0.5f,  0.5f, -0.5f,  
+         0.5f, -0.5f, -0.5f,  
+         0.5f, -0.5f, -0.5f,  
+         0.5f, -0.5f,  0.5f,  
+         0.5f,  0.5f,  0.5f,  
+
+        -0.5f, -0.5f, -0.5f,  
+         0.5f, -0.5f, -0.5f,  
+         0.5f, -0.5f,  0.5f,  
+         0.5f, -0.5f,  0.5f,  
+        -0.5f, -0.5f,  0.5f,  
+        -0.5f, -0.5f, -0.5f,  
+
+        -0.5f,  0.5f, -0.5f,  
+         0.5f,  0.5f, -0.5f,  
+         0.5f,  0.5f,  0.5f,  
+         0.5f,  0.5f,  0.5f,  
+        -0.5f,  0.5f,  0.5f,  
+        -0.5f,  0.5f, -0.5f  
+    };
+
+
+
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glBindVertexArray(VAO);
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+
+    glUseProgram(mesh_shader_program);
+
+    //get uniform index projection * modelview
+    GLint modelview_index, projection_index;
+    modelview_index = glGetUniformLocation(mesh_shader_program,"modelview");
+    projection_index = glGetUniformLocation(mesh_shader_program,"projection");
+
+    //glUniformMatrix4fv(modelview_index,1,GL_FALSE,);
+    //get project and view matrix here
+
+    GLfloat modelview[16],projection[16];
+    glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
+    glGetFloatv(GL_PROJECTION_MATRIX, projection);
+
+
+
+
+    glBindVertexArray(VAO);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+
+
+    glUseProgram(0);
+
 
     //glPopMatrix();
 }
