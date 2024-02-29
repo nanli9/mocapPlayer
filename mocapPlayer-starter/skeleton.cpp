@@ -602,19 +602,19 @@ void Skeleton::GetRotationAngle(double rotationAngle[3])
 }
 
 
-void Skeleton::bindVertices(Mesh* mesh)
-{
-    bindVertices(mesh, m_pRootBone);
-}
-void Skeleton::bindVertices(Mesh* mesh,Bone *bone)
-{
-    if (bone == NULL)
-        return;
-    for (auto itr = mesh->vertices_bone_map.begin(); itr != mesh->vertices_bone_map.end(); itr++)
-    {
-        if (bone->name == itr->first)
-            bone->verticesList = itr->second;
-    }
-    bindVertices(mesh, bone->child);
-    bindVertices(mesh, bone->sibling);
-}
+//void Skeleton::bindVertices(Mesh* mesh)
+//{
+//    bindVertices(mesh, m_pRootBone);
+//}
+//void Skeleton::bindVertices(Mesh* mesh,Bone *bone)
+//{
+//    if (bone == NULL)
+//        return;
+//    for (auto itr = mesh->vertices_bone_map.begin(); itr != mesh->vertices_bone_map.end(); itr++)
+//    {
+//        if (bone->name == itr->first)
+//            bone->verticesList = itr->second;
+//    }
+//    bindVertices(mesh, bone->child);
+//    bindVertices(mesh, bone->sibling);
+//}

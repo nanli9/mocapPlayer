@@ -52,8 +52,7 @@ struct Bone
   double tx,ty,tz;
   double tl;
   int dofo[8];
-  //mesh vertices bind to it 
-  std::vector<aiVertexWeight> verticesList;
+  
 };
 
 
@@ -93,8 +92,8 @@ public:
 
   int numBonesInSkel(Bone bone);
   int movBonesInSkel(Bone bone);
-  void bindVertices(Mesh* mesh);
-  void bindVertices(Mesh* mesh,Bone* bone);
+  //void bindVertices(Mesh* mesh);
+  //void bindVertices(Mesh* mesh,Bone* bone);
 
 protected:
 

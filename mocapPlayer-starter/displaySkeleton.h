@@ -15,6 +15,7 @@ Revision 3 - Jernej Barbic and Yili Zhao, Feb, 2012
 #include "skeleton.h"
 #include "motion.h"
 #include "Mesh.h"
+#include "Matrix4x4.h"
 
 
 #include <assimp/cimport.h>
@@ -84,7 +85,8 @@ protected:
   Mesh *m_MeshList[MAX_SKELS];		//display list with meshes
   std::vector<double> verticesBuffer;
   //std::map<int, float*> vertices_modelview_map;  //store each modelview matrix and vertices
-
+  //store the bone matrix to pass into the vertex shader
+  Matrix4x4 boneMatrix[36];
 
   //vertex shader variable here
   GLuint vertex_shader;

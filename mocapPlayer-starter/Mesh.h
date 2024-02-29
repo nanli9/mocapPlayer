@@ -13,11 +13,21 @@
 #include <vector>
 #include <map>
 
+#define MAX_BONE_PER_VERTEX 4
+
+struct vertices
+{
+	std::string boneID[MAX_BONE_PER_VERTEX];
+	int boneCount = 0;
+};
+
 class Mesh
 {
 public:
 	std::vector<aiVector3D> verticesList;//store vertices pos
-	std::map<std::string,std::vector<aiVertexWeight>> vertices_bone_map;
+	std::vector<vertices> verticesInfo;//store vertices pos and bone ID
+	std::map<int, vertices> vertices_bone_map;
+	//std::map<std::string,std::vector<aiVertexWeight>> vertices_bone_map;
 	int verticesNum;
 	Mesh(char* fbx_filename);
 };

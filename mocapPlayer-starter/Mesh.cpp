@@ -27,12 +27,30 @@ Mesh::Mesh(char* fbx_filename)
         }
         if(pMesh->HasBones()) 
         {
-            for (unsigned int j = 0; j < pMesh->mNumBones; j++) {
+            for (unsigned int j = 0; j < pMesh->mNumBones; j++) 
+            {
                 aiBone* bone = (pMesh->mBones)[j];
                 std::vector<aiVertexWeight> list;
                 for (int k = 0; k < bone->mNumWeights; k++)
+                {
                     list.push_back((bone->mWeights)[k]);
-                vertices_bone_map.insert({bone->mName.data,list});
+                    //store each bone in vertices
+                    if (vertices_bone_map.find((bone->mWeights)[k].mVertexId)!= vertices_bone_map.end())
+                    {
+                        //add one more bone effect vertices
+                        int& boneIndex = vertices_bone_map.at((bone->mWeights)[k].mVertexId).boneCount;
+                        vertices_bone_map.at((bone->mWeights)[k].mVertexId).boneID[boneIndex] = bone->mName.data;
+                        boneIndex++;
+                    }
+                    else
+                    {
+                        struct vertices v = { {bone->mName.data,"","","" }, 1};
+                        vertices_bone_map.insert({ (bone->mWeights)[k].mVertexId,v});
+                    }
+
+                }
+                //vertices_bone_map.insert({bone->mName.data,list});
+
             }
 
 

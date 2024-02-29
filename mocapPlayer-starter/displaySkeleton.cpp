@@ -346,22 +346,32 @@ void DisplaySkeleton::DrawMesh(int skelNum)
 
     //glUniformMatrix4fv(modelview_index,1,GL_FALSE,);
     //get project and view matrix here
+    glScalef(0.3,0.3,0.3);
 
     GLfloat modelview[16],projection[16];
     glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
     glGetFloatv(GL_PROJECTION_MATRIX, projection);
     Matrix4x4 modelview_matrix(modelview);
     Matrix4x4 projection_matrix(projection);
-
     //set uniform
     glUniformMatrix4fv(modelview_index, 1, GL_FALSE, &modelview_matrix.p[0][0]);
     glUniformMatrix4fv(projection_index, 1, GL_FALSE, &projection_matrix.p[0][0]);
-
-
     glBindVertexArray(VAO);
     glPointSize(5);
-    glDrawArrays(GL_POINTS, 0, m_MeshList[0]->verticesList.size());
 
+    for (int i = 0; i < m_MeshList[0]->verticesList.size(); i++)
+    {
+        /*for (auto j = m_MeshList[0]->vertices_bone_map.begin(); j != m_MeshList[0]->vertices_bone_map.end();j++)
+        {
+            if (j->second.boneCount == 4)
+                printf("****************\n");
+        }*/
+        glDrawArrays(GL_POINTS, i, 1);
+    }
+    //boneMatrix[0];
+
+
+    verticesBuffer.clear();
     glUseProgram(0);
 
     //glPopMatrix();
@@ -470,29 +480,6 @@ void DisplaySkeleton::DrawBone(Bone *pBone,int skelNum)
     glRotatef(float(theta*180./M_PI), float(r_axis[0]), float(r_axis[1]), float(r_axis[2]));
     glCallList(m_BoneList[skelNum] + pBone->idx);
   }
-  //should draw mesh here 
-  //if (numMeshes)
-  //{
-  //    //DrawMesh(0);
-  //}
-  //GLfloat modelview[16];
-  //glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
-  //for (int i = 0; i < pBone->verticesList.size(); i++)
-  //{
-  //    if (vertices_modelview_map.find((pBone->verticesList)[i].mVertexId) != vertices_modelview_map.end())
-  //    {
-  //        for (int j = 0; j < 16; j++)
-  //            vertices_modelview_map.at((pBone->verticesList)[i].mVertexId)[j] += modelview[j] * pBone->verticesList[i].mWeight * 0.3;
-  //    }
-  //    else
-  //    {
-  //        float* tmp = new float[16];
-  //        for (int j = 0; j < 16; j++)
-  //            tmp[j] = modelview[j] * pBone->verticesList[i].mWeight*0.3;
-  //        vertices_modelview_map.insert({ (pBone->verticesList)[i].mVertexId,tmp });
-
-  //    }
-  //}
 
   glPopMatrix(); 
 
@@ -500,7 +487,10 @@ void DisplaySkeleton::DrawBone(Bone *pBone,int skelNum)
   // This step corresponds to doing: M_k+1 = ModelviewMatrix += T_k+1
   glTranslatef(float(tx), float(ty), float(tz));
 
-  
+  GLfloat modelview[16];
+  glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
+  Matrix4x4 matrix(modelview);
+  boneMatrix[pBone->idx] = matrix;
 
 }
 
@@ -619,7 +609,7 @@ void DisplaySkeleton::LoadMesh(Mesh* pMesh)
     printf("Parsing %d meshes\n\n", pMesh->verticesNum);
     m_MeshList[numMeshes] = pMesh;
     //bind the vertices to the skeleton
-    m_pSkeleton[numSkeletons-1]->bindVertices(pMesh);
+    //m_pSkeleton[numSkeletons-1]->bindVertices(pMesh);
     numMeshes++;
 }
 
