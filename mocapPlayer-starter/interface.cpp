@@ -129,6 +129,7 @@ Fl_Window * make_window()
 
     { 
       Player_Gl_Window * o = glwindow = new Player_Gl_Window(5, 5, 640, 480, "label");
+      o->mode(FL_OPENGL3);
       o->box(FL_DOWN_FRAME);
       o->labeltype(FL_NO_LABEL);
     }

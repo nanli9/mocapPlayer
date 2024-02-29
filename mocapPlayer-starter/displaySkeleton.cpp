@@ -8,10 +8,17 @@ Revision 3 - Jernej Barbic and Yili Zhao, Feb, 2012
 #include <cmath>
 #include "types.h"
 
+#if defined(__APPLE__)
+#  include <OpenGL/gl3.h> // defines OpenGL 3.0+ functions
+#else
+#  if defined(_WIN32)
+#    define GLEW_STATIC 1
+#  endif
+#  include <GL/glew.h>
+#endif
+
 #include <FL/gl.h>
 #include <FL/glut.H>
-
-
 
 #include "skeleton.h"
 #include "motion.h"
@@ -128,6 +135,8 @@ void DisplaySkeleton::SetDisplayList(int skeletonID, Bone *bone, GLuint *pBoneLi
 }
 void DisplaySkeleton::DrawMesh(int skelNum)
 {
+    //glCreateShader(GL_VERTEX_SHADER);
+    glCreateShader(GL_VERTEX_SHADER);
     glPushMatrix();
     glPointSize(5);
     /*glScalef(0.3, 0.3, 0.3);

@@ -27,6 +27,7 @@ public:
   called whenever a event happens inside the space 
   taken up by the Anim_Gl_Window. */		
   int handle(int event); 
+
 };
 
 

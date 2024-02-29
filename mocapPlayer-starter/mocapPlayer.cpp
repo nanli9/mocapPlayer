@@ -16,6 +16,15 @@ Revision 3 - Jernej Barbic and Yili Zhao, Feb, 2012
 #include <cassert>
 #include <cmath>
 
+#if defined(__APPLE__)
+#  include <OpenGL/gl3.h> // defines OpenGL 3.0+ functions
+#else
+#  if defined(_WIN32)
+#    define GLEW_STATIC 1
+#  endif
+#  include <GL/glew.h>
+#endif
+
 #include <FL/gl.h>
 #include <FL/glut.H>  // GLUT for use with FLTK
 #include <FL/Fl_File_Chooser.H> // file chooser for load/save
@@ -835,6 +844,14 @@ void GraphicsInit()
 */
 int Player_Gl_Window::handle(int event) 
 {
+#ifndef __APPLE__
+    static int first = 1;
+    if (first && event == FL_SHOW && shown()) {
+        first = 0;
+        make_current();
+        glewInit(); // defines pters to functions of OpenGL V 1.2 and above
+    }
+#endif
   int handled = 1;
   static int prev_x, prev_y;
   int delta_x=0, delta_y=0; 
