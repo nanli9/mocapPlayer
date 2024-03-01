@@ -354,6 +354,9 @@ void DisplaySkeleton::DrawMesh(int skelNum)
     Matrix4x4 modelview_matrix(modelview);
     Matrix4x4 projection_matrix(projection);
     //set uniform
+    /*modelview_matrix.p[0][0] = modelview_matrix.p[0][0] * 0.3;
+    modelview_matrix.p[1][1] = modelview_matrix.p[1][1] * 0.3;
+    modelview_matrix.p[2][2] = modelview_matrix.p[2][2] * 0.3;*/
     glUniformMatrix4fv(modelview_index, 1, GL_FALSE, &modelview_matrix.p[0][0]);
     glUniformMatrix4fv(projection_index, 1, GL_FALSE, &projection_matrix.p[0][0]);
     glBindVertexArray(VAO);
@@ -487,11 +490,11 @@ void DisplaySkeleton::DrawBone(Bone *pBone,int skelNum)
   // This step corresponds to doing: M_k+1 = ModelviewMatrix += T_k+1
   glTranslatef(float(tx), float(ty), float(tz));
 
-  GLfloat modelview[16];
-  glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
-  Matrix4x4 matrix(modelview);
-  boneMatrix[pBone->idx] = matrix;
-
+  //take bone matrices into list
+  GLfloat boneMatrix[16];
+  glGetFloatv(GL_MODELVIEW_MATRIX, boneMatrix);
+  Matrix4x4 matrix(boneMatrix);
+  boneMatrices[pBone->idx] = matrix;
 }
 
 void DisplaySkeleton::SetShadowingModelviewMatrix(double ground[4], double light[4])

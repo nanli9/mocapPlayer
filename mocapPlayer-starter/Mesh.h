@@ -30,6 +30,7 @@ public:
 	//std::map<std::string,std::vector<aiVertexWeight>> vertices_bone_map;
 	int verticesNum;
 	Mesh(char* fbx_filename);
+	int BoneStringMappingInt(char* boneName);
 };
 
 #endif // !MESH_H
