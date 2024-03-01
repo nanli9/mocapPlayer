@@ -153,48 +153,27 @@ void DisplaySkeleton::GenShader()
     const char* vs_source[] = {
         "uniform mat4 modelview;"
         "uniform mat4 projection;"
-        "uniform mat4 boneMatrix1;"
-        "uniform mat4 boneMatrix2;"
-        "uniform mat4 boneMatrix3;"
-        "uniform mat4 boneMatrix4;"
-        "uniform mat4 boneMatrix5;"
-        "uniform mat4 boneMatrix6;"
-        "uniform mat4 boneMatrix7;"
-        "uniform mat4 boneMatrix8;"
-        "uniform mat4 boneMatrix9;"
-        "uniform mat4 boneMatrix10;"
-        "uniform mat4 boneMatrix11;"
-        "uniform mat4 boneMatrix12;"
-        "uniform mat4 boneMatrix13;"
-        "uniform mat4 boneMatrix14;"
-        "uniform mat4 boneMatrix15;"
-        "uniform mat4 boneMatrix16;"
-        "uniform mat4 boneMatrix17;"
-        "uniform mat4 boneMatrix18;"
-        "uniform mat4 boneMatrix19;"
-        "uniform mat4 boneMatrix20;"
-        "uniform mat4 boneMatrix21;"
-        "uniform mat4 boneMatrix22;"
-        "uniform mat4 boneMatrix23;"
-        "uniform mat4 boneMatrix24;"
-        "uniform mat4 boneMatrix25;"
-        "uniform mat4 boneMatrix26;"
-        "uniform mat4 boneMatrix27;"
-        "uniform mat4 boneMatrix28;"
-        "uniform mat4 boneMatrix29;"
-        "uniform mat4 boneMatrix30;"
-      
+        
+        "uniform mat4 boneMatrix[30];"
+        "uniform int boneIndex[4];"
+        "uniform float weight[4];"
         "in vec3 pos;"
-        "int boneIndex1;"
-        "int boneIndex2;"
-        "int boneIndex3;"
-        "int boneIndex4;"
 
         "void main()"
         "{"
-        "  gl_Position =  projection * modelview * vec4(pos,1.0);"
+        ""
+        /*"  for(int i=0;i<4;i++)"
+        "{"
+            "modelview*=weight[i]*boneMatrix[boneIndex[i]];"
+        "}"*/
+        "  mat4 m = weight[0]*boneMatrix[boneIndex[0]];"
+        "  m += weight[1]*boneMatrix[boneIndex[1]];"
+        "  m += weight[2]*boneMatrix[boneIndex[2]];"
+        "  m += weight[3]*boneMatrix[boneIndex[3]];"
+        "  gl_Position =  projection  * m *modelview * vec4(pos,1.0);"
         "}"
     };
+   
     glShaderSource(vertex_shader, 1, vs_source, NULL);
     glShaderSource(fragment_shader, 1, fs_source, NULL);
     glCompileShader(vertex_shader);
@@ -272,29 +251,56 @@ void DisplaySkeleton::DrawMesh(int skelNum)
 
     //glUniformMatrix4fv(modelview_index,1,GL_FALSE,);
     //get project and view matrix here
+
+    glPushMatrix();
+    glLoadIdentity();
     glScalef(0.3,0.3,0.3);
 
     GLfloat modelview[16],projection[16];
     glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
     glGetFloatv(GL_PROJECTION_MATRIX, projection);
+    /*for (int i = 0; i < 16; i++)
+    {
+        modelview[i] = 0;
+    }*/
     Matrix4x4 modelview_matrix(modelview);
     Matrix4x4 projection_matrix(projection);
     //set uniform
     /*modelview_matrix.p[0][0] = modelview_matrix.p[0][0] * 0.3;
     modelview_matrix.p[1][1] = modelview_matrix.p[1][1] * 0.3;
     modelview_matrix.p[2][2] = modelview_matrix.p[2][2] * 0.3;*/
+
     glUniformMatrix4fv(modelview_index, 1, GL_FALSE, &modelview_matrix.p[0][0]);
     glUniformMatrix4fv(projection_index, 1, GL_FALSE, &projection_matrix.p[0][0]);
     glBindVertexArray(VAO);
     glPointSize(5);
 
     //set uniform for bones matrices
-    for (int i = 1; i <= m_MeshList[0]->BoneNum; i++)
+    //for (int i = 1; i <= m_MeshList[0]->BoneNum; i++)
+    //{
+    //    //boneMatrices
+    //    std::string str = "boneMatrix" + std::to_string(i);
+    //    const char* boneMatrixName = str.c_str();
+    //    GLint boneMatrixIndex = glGetUniformLocation(mesh_shader_program, boneMatrixName);
+    //    glUniformMatrix4fv(boneMatrixIndex, 1, GL_FALSE, &boneMatrices[i-1].p[0][0]);
+    //}
+    GLint boneMatricesIndex = glGetUniformLocation(mesh_shader_program, "boneMatrix");
+
+    GLfloat matrix[16 * 30];
+    for (int i = 0; i < 30; i++)
     {
-        /*char* boneMatrixName = strcpy("boneMatrix",i) ;
-        glGetUniformLocation(mesh_shader_program, boneMatrixName);*/
+        float* tmp= boneMatrices[i].flat();
+        for (int j = 0; j < 16; j++)
+        {
+            matrix[16*i+j] = tmp[j];
+        }
     }
 
+    glUniformMatrix4fv(boneMatricesIndex, 30, GL_FALSE, matrix);
+
+    GLint boneBinedIndex = glGetUniformLocation(mesh_shader_program, "boneIndex");
+    GLint weightIndex = glGetUniformLocation(mesh_shader_program, "weight");
+    
 
     for (int i = 0; i < m_MeshList[0]->verticesList.size(); i++)
     {
@@ -303,16 +309,21 @@ void DisplaySkeleton::DrawMesh(int skelNum)
             if (j->second.boneCount == 4)
                 printf("****************\n");
         }*/
+        int* boneIndex = m_MeshList[0]->vertices_bone_map.at(i).boneID;
+        float* weight = m_MeshList[0]->vertices_bone_map.at(i).boneWeights;
+        
+        glUniform1iv(boneBinedIndex, 4 , boneIndex);
+        glUniform1fv(weightIndex, 4 , weight);
+        
 
         glDrawArrays(GL_POINTS, i, 1);
     }
-    //boneMatrix[0];
 
 
     verticesBuffer.clear();
     glUseProgram(0);
 
-    //glPopMatrix();
+    glPopMatrix();
 }
 /*
   Define M_k = Modelview matrix at the kth node (bone) in the heirarchy

@@ -58,8 +58,17 @@ public:
 				p[i][j] = x[i*4+j];
 		}
 	}
-  ~Matrix4x4() {};
-
+	~Matrix4x4() {};
+	float* flat()
+	{
+		float array[16];
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+				array[4*i+j] = p[i][j];
+		}
+		return array;
+	}
   // inquiry functions
  // double& operator[][](int i,int j) { return p[i][j];}
   //data members
