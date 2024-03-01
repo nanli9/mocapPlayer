@@ -27,6 +27,7 @@ Mesh::Mesh(char* fbx_filename)
         }
         if(pMesh->HasBones()) 
         {
+            BoneNum = pMesh->mNumBones;
             for (unsigned int j = 0; j < pMesh->mNumBones; j++) 
             {
                 aiBone* bone = (pMesh->mBones)[j];
@@ -39,13 +40,19 @@ Mesh::Mesh(char* fbx_filename)
                     {
                         //add one more bone effect vertices
                         int& boneIndex = vertices_bone_map.at((bone->mWeights)[k].mVertexId).boneCount;
-                        vertices_bone_map.at((bone->mWeights)[k].mVertexId).boneID[boneIndex] = bone->mName.data;
+                        if (BoneStringMappingInt(bone->mName.data) != -2)
+                            vertices_bone_map.at((bone->mWeights)[k].mVertexId).boneID[boneIndex] = BoneStringMappingInt(bone->mName.data);
+                            //printf("%s", bone->mName.data);
+                        vertices_bone_map.at((bone->mWeights)[k].mVertexId).boneWeights[boneIndex] = (bone->mWeights)[k].mWeight;
                         boneIndex++;
                     }
                     else
                     {
-                        struct vertices v = { {bone->mName.data,"","","" }, 1};
-                        vertices_bone_map.insert({ (bone->mWeights)[k].mVertexId,v});
+                        if (BoneStringMappingInt(bone->mName.data) != -2)
+                        {
+                            struct vertices v = { {BoneStringMappingInt(bone->mName.data),-1,-1,-1 },{},1 };
+                            vertices_bone_map.insert({ (bone->mWeights)[k].mVertexId,v });
+                        }
                     }
 
                 }
@@ -56,15 +63,13 @@ Mesh::Mesh(char* fbx_filename)
 
         }
     }
-    
-    
-
 }
 int Mesh::BoneStringMappingInt(char* boneName)
 {
-    int BoneId = -1;
-
-    if (!strcmp(boneName, "lhipjoint"))
+    int BoneId = -2;
+    if (!strcmp(boneName, "root"))
+        BoneId = 0;
+    else if (!strcmp(boneName, "lhipjoint"))
         BoneId = 1;
     else if(!strcmp(boneName, "lfemur"))
         BoneId = 2;

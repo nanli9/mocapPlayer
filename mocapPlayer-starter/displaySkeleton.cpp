@@ -168,6 +168,21 @@ void DisplaySkeleton::GenShader()
         "uniform mat4 boneMatrix13;"
         "uniform mat4 boneMatrix14;"
         "uniform mat4 boneMatrix15;"
+        "uniform mat4 boneMatrix16;"
+        "uniform mat4 boneMatrix17;"
+        "uniform mat4 boneMatrix18;"
+        "uniform mat4 boneMatrix19;"
+        "uniform mat4 boneMatrix20;"
+        "uniform mat4 boneMatrix21;"
+        "uniform mat4 boneMatrix22;"
+        "uniform mat4 boneMatrix23;"
+        "uniform mat4 boneMatrix24;"
+        "uniform mat4 boneMatrix25;"
+        "uniform mat4 boneMatrix26;"
+        "uniform mat4 boneMatrix27;"
+        "uniform mat4 boneMatrix28;"
+        "uniform mat4 boneMatrix29;"
+        "uniform mat4 boneMatrix30;"
       
         "in vec3 pos;"
         "int boneIndex1;"
@@ -229,95 +244,6 @@ void DisplaySkeleton::GenShader()
 
 void DisplaySkeleton::DrawMesh(int skelNum)
 {
-    //glCreateShader(GL_VERTEX_SHADER);
-    //glPushMatrix();
-    //glPointSize(5);
-    ///*glScalef(0.3, 0.3, 0.3);
-    //glTranslatef(translation[0], translation[1], translation[2]);*/
-
-    ////m_MeshList[0]->verticesList;
-    //for (int i = 0; i < m_MeshList[0]->verticesNum; i++)
-    //{
-    //    //glMultMatrixd((double*)vertices_modelview_map.find(i)->second);
-    //    float m[4][4];
-    //    for (int j = 0; j < 4; j++)
-    //    {
-    //        for (int k = 0; k < 4; k++)
-    //        {
-    //            m[j][k] = (vertices_modelview_map.at(i))[j * 4 + k];
-    //        }
-    //    }
-    //    glPushMatrix();
-    //    glMultMatrixf((float*)m);
-    //    aiVector3D pos = (m_MeshList[numMeshes - 1]->verticesList)[i];
-    //    float x = pos.x;
-    //    float y = pos.y;
-    //    float z = pos.z;
-    //    glBegin(GL_POINTS);
-    //    glVertex3f(x, y, z);
-    //    glEnd();
-    //    glPopMatrix();
-    //}
-
-
-    ///*for (int j = 0; j < pBone->verticesList.size(); j++)
-    //{
-    //    aiVector3D pos = (m_MeshList[numMeshes - 1]->verticesList)[pBone->verticesList[j].mVertexId];
-    //    double x = pos.x;
-    //    double y = pos.y;
-    //    double z = pos.z;
-    //    glVertex3f(x, y, z);
-    //}*/
-
-    //glPopMatrix();
-
-
-
-    //glPushMatrix();
-
-    float vertices[] = {
-        -0.5f, -0.5f, -0.5f,  
-         0.5f, -0.5f, -0.5f,  
-         0.5f,  0.5f, -0.5f, 
-         0.5f,  0.5f, -0.5f,  
-        -0.5f,  0.5f, -0.5f,  
-        -0.5f, -0.5f, -0.5f,  
-
-        -0.5f, -0.5f,  0.5f,  
-         0.5f, -0.5f,  0.5f,  
-         0.5f,  0.5f,  0.5f,  
-         0.5f,  0.5f,  0.5f,  
-        -0.5f,  0.5f,  0.5f,  
-        -0.5f, -0.5f,  0.5f,  
-
-        -0.5f,  0.5f,  0.5f,  
-        -0.5f,  0.5f, -0.5f,  
-        -0.5f, -0.5f, -0.5f,  
-        -0.5f, -0.5f, -0.5f,  
-        -0.5f, -0.5f,  0.5f,  
-        -0.5f,  0.5f,  0.5f,  
-
-         0.5f,  0.5f,  0.5f,  
-         0.5f,  0.5f, -0.5f,  
-         0.5f, -0.5f, -0.5f,  
-         0.5f, -0.5f, -0.5f,  
-         0.5f, -0.5f,  0.5f,  
-         0.5f,  0.5f,  0.5f,  
-
-        -0.5f, -0.5f, -0.5f,  
-         0.5f, -0.5f, -0.5f,  
-         0.5f, -0.5f,  0.5f,  
-         0.5f, -0.5f,  0.5f,  
-        -0.5f, -0.5f,  0.5f,  
-        -0.5f, -0.5f, -0.5f,  
-
-        -0.5f,  0.5f, -0.5f,  
-         0.5f,  0.5f, -0.5f,  
-         0.5f,  0.5f,  0.5f,  
-         0.5f,  0.5f,  0.5f,  
-        -0.5f,  0.5f,  0.5f,  
-        -0.5f,  0.5f, -0.5f  
-    };
     //put mesh vertices into the buffer
     for (int i = 0; i < m_MeshList[0]->verticesList.size(); i++)
     {
@@ -362,6 +288,14 @@ void DisplaySkeleton::DrawMesh(int skelNum)
     glBindVertexArray(VAO);
     glPointSize(5);
 
+    //set uniform for bones matrices
+    for (int i = 1; i <= m_MeshList[0]->BoneNum; i++)
+    {
+        /*char* boneMatrixName = strcpy("boneMatrix",i) ;
+        glGetUniformLocation(mesh_shader_program, boneMatrixName);*/
+    }
+
+
     for (int i = 0; i < m_MeshList[0]->verticesList.size(); i++)
     {
         /*for (auto j = m_MeshList[0]->vertices_bone_map.begin(); j != m_MeshList[0]->vertices_bone_map.end();j++)
@@ -369,6 +303,7 @@ void DisplaySkeleton::DrawMesh(int skelNum)
             if (j->second.boneCount == 4)
                 printf("****************\n");
         }*/
+
         glDrawArrays(GL_POINTS, i, 1);
     }
     //boneMatrix[0];
