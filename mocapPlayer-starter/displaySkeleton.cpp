@@ -161,9 +161,14 @@ void DisplaySkeleton::GenShader()
 
         "void main()"
         "{"
-        "  mat4 m = weight[0]*boneMatrix[boneIndex[0]];"
+        "  mat4 m;"
+        "  if (boneIndex[0] != -1)"
+        "  m = weight[0]*boneMatrix[boneIndex[0]];"
+        "  if(boneIndex[1]!=-1)"
         "  m += weight[1]*boneMatrix[boneIndex[1]];"
+        "  if(boneIndex[2]!=-1)"
         "  m += weight[2]*boneMatrix[boneIndex[2]];"
+        "  if(boneIndex[3]!=-1)"
         "  m += weight[3]*boneMatrix[boneIndex[3]];"
         "  gl_Position =  projection   * m * modelview * vec4(pos,1.0);"
         "}"
@@ -250,7 +255,7 @@ void DisplaySkeleton::DrawMesh(int skelNum)
     glPushMatrix();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glScalef(0.3,0.3,0.3);
+    glScalef(0.1,0.1,0.1);
 
     GLfloat modelview[16],projection[16];
     glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
@@ -265,7 +270,7 @@ void DisplaySkeleton::DrawMesh(int skelNum)
     glUniformMatrix4fv(modelview_index, 1, GL_FALSE, &modelview_matrix.p[0][0]);
     glUniformMatrix4fv(projection_index, 1, GL_FALSE, &projection_matrix.p[0][0]);
     glBindVertexArray(VAO);
-    glPointSize(5);
+    glPointSize(2.5);
 
     //set uniform for bones matrices
     GLint boneMatricesIndex = glGetUniformLocation(mesh_shader_program, "boneMatrix");
