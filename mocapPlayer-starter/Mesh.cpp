@@ -40,17 +40,16 @@ Mesh::Mesh(char* fbx_filename)
                     {
                         //add one more bone effect vertices
                         int& boneIndex = vertices_bone_map.at((bone->mWeights)[k].mVertexId).boneCount;
-                        if (BoneStringMappingInt(bone->mName.data) != -2)
+                        //if (BoneStringMappingInt(bone->mName.data) != -2)
                             vertices_bone_map.at((bone->mWeights)[k].mVertexId).boneID[boneIndex] = BoneStringMappingInt(bone->mName.data);
-                            //printf("%s", bone->mName.data);
                         vertices_bone_map.at((bone->mWeights)[k].mVertexId).boneWeights[boneIndex] = (bone->mWeights)[k].mWeight;
                         boneIndex++;
                     }
                     else
                     {
-                        if (BoneStringMappingInt(bone->mName.data) != -2)
+                        //if (BoneStringMappingInt(bone->mName.data) != -2)
                         {
-                            struct vertices v = { {BoneStringMappingInt(bone->mName.data),-1,-1,-1 },{},1 };
+                            struct vertices v = { {BoneStringMappingInt(bone->mName.data),-1,-1,-1 },{(bone->mWeights)[k].mWeight,0,0,0},1 };
                             vertices_bone_map.insert({ (bone->mWeights)[k].mVertexId,v });
                         }
                     }
