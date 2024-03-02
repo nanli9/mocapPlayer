@@ -35,6 +35,8 @@ class Matrix4x4
 
   // scalar Multiplication
   friend Matrix4x4    operator*(Matrix4x4 const&, double );
+  
+  friend Matrix4x4    operator*(Matrix4x4 const&, Matrix4x4 const&);
 
   // scalar Division
   friend Matrix4x4    operator/(Matrix4x4 const&, double );
@@ -49,6 +51,10 @@ public:
 			for (int j = 0; j < 4; j++)
 				p[i][j] = 0;
 		}
+		p[0][0] = 1;
+		p[1][1] = 1;
+		p[2][2] = 1;
+		p[3][3] = 1;
 	}
 	Matrix4x4(float x[16]) 
 	{
@@ -69,6 +75,9 @@ public:
 		}
 		return array;
 	}
+	void rotationX(float a);
+	void rotationY(float a);
+	void rotationZ(float a);
   // inquiry functions
  // double& operator[][](int i,int j) { return p[i][j];}
   //data members

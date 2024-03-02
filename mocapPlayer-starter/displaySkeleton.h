@@ -87,6 +87,7 @@ protected:
   //std::map<int, float*> vertices_modelview_map;  //store each modelview matrix and vertices
   //store the bone matrix to pass into the vertex shader
   Matrix4x4 boneMatrices[31];
+  Matrix4x4 bone;
 
   //vertex shader variable here
   GLuint vertex_shader;

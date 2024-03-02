@@ -289,18 +289,9 @@ void DisplaySkeleton::DrawMesh(int skelNum)
 
     for (int i = 0; i < m_MeshList[0]->verticesList.size(); i++)
     {
-        /*for (auto j = m_MeshList[0]->vertices_bone_map.begin(); j != m_MeshList[0]->vertices_bone_map.end();j++)
-        {
-            if (j->second.boneCount == 4)
-                printf("****************\n");
-        }*/
         int* boneIndex = m_MeshList[0]->vertices_bone_map.at(i).boneID;
         float* weight = m_MeshList[0]->vertices_bone_map.at(i).boneWeights;
-        /*for (int j = 0; j < 4; j++)
-        {
-            if (weight[j] < 0)
-                printf("****************\n");
-        }*/
+       
         glUniform1iv(boneBinedIndex, 4 , boneIndex);
         
         glUniform1fv(weightIndex, 4 , weight);
@@ -313,6 +304,7 @@ void DisplaySkeleton::DrawMesh(int skelNum)
     glPopMatrix();
 }
 /*
+  
   Define M_k = Modelview matrix at the kth node (bone) in the heirarchy
   M_k stores the transformation matrix of the kth bone in world coordinates
   Our goal is to draw the (k+1)th bone, using its local information and M_k
