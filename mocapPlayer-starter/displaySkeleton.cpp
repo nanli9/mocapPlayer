@@ -154,23 +154,20 @@ void DisplaySkeleton::GenShader()
         "uniform mat4 modelview;"
         "uniform mat4 projection;"
         
-        "uniform mat4 boneMatrix[40];"
+        "uniform mat4 boneMatrix[31];"
         "uniform int boneIndex[4];"
         "uniform float weight[4];"
         "in vec3 pos;"
 
         "void main()"
         "{"
-        "  mat4 m;"
-        "  if (boneIndex[0] != -1)"
-        "  m = weight[0]*boneMatrix[boneIndex[0]];"
-        "  if(boneIndex[1]!=-1)"
-        "  m += weight[1]*boneMatrix[boneIndex[1]];"
-        "  if(boneIndex[2]!=-1)"
-        "  m += weight[2]*boneMatrix[boneIndex[2]];"
-        "  if(boneIndex[3]!=-1)"
-        "  m += weight[3]*boneMatrix[boneIndex[3]];"
-        "  gl_Position =  projection   * m * modelview * vec4(pos,1.0);"
+        "  mat4 m = mat4(0.0);"
+        "   for(int i=0;i<4;i++)"
+        "   {"
+        "   if(boneIndex[i] != -1)"
+        "       m += weight[i]*boneMatrix[boneIndex[i]];"  
+        "   }"
+        "   gl_Position =  projection * m * modelview * vec4(pos,1.0);"
         "}"
     };
    
@@ -255,7 +252,8 @@ void DisplaySkeleton::DrawMesh(int skelNum)
     glPushMatrix();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glScalef(0.1,0.1,0.1);
+    glScalef(0.3,0.3,0.3);
+    //glTranslatef(0,-3.4,0);
 
     GLfloat modelview[16],projection[16];
     glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
@@ -274,8 +272,8 @@ void DisplaySkeleton::DrawMesh(int skelNum)
 
     //set uniform for bones matrices
     GLint boneMatricesIndex = glGetUniformLocation(mesh_shader_program, "boneMatrix");
-    GLfloat matrix[16 * 40];
-    for (int i = 0; i < 40; i++)
+    GLfloat matrix[16 * 31];
+    for (int i = 0; i < 31; i++)
     {
         float* tmp= boneMatrices[i].flat();
         for (int j = 0; j < 16; j++)
@@ -283,7 +281,7 @@ void DisplaySkeleton::DrawMesh(int skelNum)
             matrix[16*i+j] = tmp[j];
         }
     }
-    glUniformMatrix4fv(boneMatricesIndex, 40, GL_FALSE, matrix);
+    glUniformMatrix4fv(boneMatricesIndex, 31, GL_FALSE, matrix);
 
     GLint boneBinedIndex = glGetUniformLocation(mesh_shader_program, "boneIndex");
     GLint weightIndex = glGetUniformLocation(mesh_shader_program, "weight");
@@ -298,8 +296,13 @@ void DisplaySkeleton::DrawMesh(int skelNum)
         }*/
         int* boneIndex = m_MeshList[0]->vertices_bone_map.at(i).boneID;
         float* weight = m_MeshList[0]->vertices_bone_map.at(i).boneWeights;
-        
+        /*for (int j = 0; j < 4; j++)
+        {
+            if (weight[j] < 0)
+                printf("****************\n");
+        }*/
         glUniform1iv(boneBinedIndex, 4 , boneIndex);
+        
         glUniform1fv(weightIndex, 4 , weight);
 
         glDrawArrays(GL_POINTS, i, 1);
@@ -413,6 +416,7 @@ void DisplaySkeleton::DrawBone(Bone *pBone,int skelNum)
     glRotatef(float(theta*180./M_PI), float(r_axis[0]), float(r_axis[1]), float(r_axis[2]));
     glCallList(m_BoneList[skelNum] + pBone->idx);
   }
+  
 
   glPopMatrix(); 
 
@@ -420,11 +424,17 @@ void DisplaySkeleton::DrawBone(Bone *pBone,int skelNum)
   // This step corresponds to doing: M_k+1 = ModelviewMatrix += T_k+1
   glTranslatef(float(tx), float(ty), float(tz));
 
+
   //take bone matrices into list
   GLfloat boneMatrix[16];
   glGetFloatv(GL_MODELVIEW_MATRIX, boneMatrix);
   Matrix4x4 matrix(boneMatrix);
+  /*boneMatrix[12] += float(tx);
+  boneMatrix[13] += float(ty);
+  boneMatrix[14] += float(tz);*/
+
   boneMatrices[pBone->idx] = matrix;
+
 }
 
 void DisplaySkeleton::SetShadowingModelviewMatrix(double ground[4], double light[4])
@@ -500,9 +510,6 @@ void DisplaySkeleton::Render(RenderMode renderMode_)
     glRotatef(float(rotationAngle[1]), 0.0f, 1.0f, 0.0f);
     glRotatef(float(rotationAngle[2]), 0.0f, 0.0f, 1.0f);
     Traverse(m_pSkeleton[i]->getRoot(),i);
-
-    
-
     glPopMatrix();
 
   }
