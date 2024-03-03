@@ -12,7 +12,6 @@
 #include <FL/fl_ask.H>  // fl_alert()
 
 #include "ExternalCodeEditor_WIN32.h"
-#define _snprintf(...) snprintf(__VA_ARGS__)
 
 extern int G_debug;     // defined in fluid.cxx
 
