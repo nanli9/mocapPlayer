@@ -87,14 +87,14 @@ protected:
   //std::map<int, float*> vertices_modelview_map;  //store each modelview matrix and vertices
   //store the bone matrix to pass into the vertex shader
   Matrix4x4 boneMatrices[31];
-  Matrix4x4 bone;
+  Matrix4x4 bone = Matrix4x4();
 
   //vertex shader variable here
   GLuint vertex_shader;
   GLuint fragment_shader;
   GLuint mesh_shader_program;
   GLuint VAO, VBO;
-
+  GLfloat modelview[16];
 
   static float jointColors[NUMBER_JOINT_COLORS][3];
 };

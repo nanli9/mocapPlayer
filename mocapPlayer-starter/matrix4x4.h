@@ -64,7 +64,16 @@ public:
 				p[i][j] = x[i*4+j];
 		}
 	}
+	Matrix4x4(double x[4][4])
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+				p[i][j] = (float)x[i][j];
+		}
+	}
 	~Matrix4x4() {};
+	//transpose the matrix
 	float* flat()
 	{
 		float array[16];
@@ -75,9 +84,9 @@ public:
 		}
 		return array;
 	}
-	void rotationX(float a);
-	void rotationY(float a);
-	void rotationZ(float a);
+	Matrix4x4 rotationX(float a);
+	Matrix4x4 rotationY(float a);
+	Matrix4x4 rotationZ(float a);
   // inquiry functions
  // double& operator[][](int i,int j) { return p[i][j];}
   //data members

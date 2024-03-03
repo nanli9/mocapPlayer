@@ -167,7 +167,7 @@ void DisplaySkeleton::GenShader()
         "   if(boneIndex[i] != -1)"
         "       m += weight[i]*boneMatrix[boneIndex[i]];"  
         "   }"
-        "   gl_Position =  projection * m * modelview * vec4(pos,1.0);"
+        "   gl_Position =  projection * m * modelview  * vec4(pos,1.0);"
         "}"
     };
    
@@ -253,15 +253,13 @@ void DisplaySkeleton::DrawMesh(int skelNum)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glScalef(0.3,0.3,0.3);
-    //glTranslatef(0,-3.4,0);
+    glTranslatef(0,-3.4,0);
 
-    GLfloat modelview[16],projection[16];
-    glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
+    GLfloat projection[16];
+    //glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
     glGetFloatv(GL_PROJECTION_MATRIX, projection);
-    /*for (int i = 0; i < 16; i++)
-    {
-        modelview[i] = 0;
-    }*/
+    glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
+
     Matrix4x4 modelview_matrix(modelview);
     Matrix4x4 projection_matrix(projection);
     //set uniform
@@ -327,9 +325,12 @@ void DisplaySkeleton::DrawBone(Bone *pBone,int skelNum)
 
   //Transform (rotate) from the local coordinate system of this bone to it's parent
   //This step corresponds to doing: ModelviewMatrix = M_k * (rot_parent_current)
-  glMultMatrixd((double*)&pBone->rot_parent_current);     
-
-
+  glMultMatrixd((double*)&pBone->rot_parent_current);    
+  if (pBone->idx == Skeleton::getRootIndex())
+  {
+      bone = Matrix4x4();
+  }
+  bone = bone * Matrix4x4(pBone->rot_parent_current);
 /*
   // The following code is for creating Figure 2 on the webpage of HW2  
   const int jointsDisplayNum = 5;
@@ -372,13 +373,30 @@ void DisplaySkeleton::DrawBone(Bone *pBone,int skelNum)
   if(pBone->doftx) 
     glTranslatef(float(pBone->tx), 0.0f, 0.0f);
 
+  bone.p[3][0] += float(pBone->tx);
+  bone.p[3][1] += float(pBone->ty);
+  bone.p[3][2] += float(pBone->tz);
+
   //rotate AMC 
-  if(pBone->dofrz) 
-    glRotatef(float(pBone->rz), 0.0f, 0.0f, 1.0f);
-  if(pBone->dofry) 
-    glRotatef(float(pBone->ry), 0.0f, 1.0f, 0.0f);
-  if(pBone->dofrx) 
-    glRotatef(float(pBone->rx), 1.0f, 0.0f, 0.0f);
+  if (pBone->dofrz)
+  {
+      glRotatef(float(pBone->rz), 0.0f, 0.0f, 1.0f);
+      //bone = bone * bone.rotationZ(float(pBone->rz));
+  }
+  if (pBone->dofry)
+  {
+      glRotatef(float(pBone->ry), 0.0f, 1.0f, 0.0f);
+      //bone = bone * bone.rotationY(float(pBone->ry));
+
+  }
+  if (pBone->dofrx)
+  {
+      glRotatef(float(pBone->rx), 1.0f, 0.0f, 0.0f);
+      //bone = bone * bone.rotationX(float(pBone->rx));
+  }
+
+  
+
 
   //Store the current ModelviewMatrix (before adding the translation part)
   glPushMatrix();
@@ -424,6 +442,10 @@ void DisplaySkeleton::DrawBone(Bone *pBone,int skelNum)
   /*boneMatrix[12] += float(tx);
   boneMatrix[13] += float(ty);
   boneMatrix[14] += float(tz);*/
+
+  /*bone.p[3][0] += float(tx);
+  bone.p[3][1] += float(ty);
+  bone.p[3][2] += float(tz);*/
 
   boneMatrices[pBone->idx] = matrix;
 
@@ -501,31 +523,16 @@ void DisplaySkeleton::Render(RenderMode renderMode_)
     glRotatef(float(rotationAngle[0]), 1.0f, 0.0f, 0.0f);
     glRotatef(float(rotationAngle[1]), 0.0f, 1.0f, 0.0f);
     glRotatef(float(rotationAngle[2]), 0.0f, 0.0f, 1.0f);
-    Traverse(m_pSkeleton[i]->getRoot(),i);
-    glPopMatrix();
 
+    Traverse(m_pSkeleton[i]->getRoot(),i);
+
+    if (numMeshes)
+        DrawMesh(0);
+    glPopMatrix();
   }
   glPopMatrix(); 
-  /*glPushMatrix();
-  for (int i = 0; i < numMeshes; i++)
-  {
-      glPointSize(5);
-      glScalef(0.3, 0.3, 0.3);
-      glTranslatef(translation[0], translation[1], translation[2]);
-      glBegin(GL_POINTS);
-      for (int j = 0; j < m_MeshList[numMeshes - 1]->verticesNum; j++)
-      {
-          aiVector3D pos = (m_MeshList[numMeshes - 1]->verticesList)[j];
-          double x = pos.x;
-          double y = pos.y;
-          double z = pos.z;
-          glVertex3f(x, y , z );
-      }
-      glEnd();
-
-  }
-  glPopMatrix();*/
-
+  
+  
 }
 
 void DisplaySkeleton::LoadMotion(Motion * pMotion)
