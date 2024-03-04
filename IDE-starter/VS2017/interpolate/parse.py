@@ -6,14 +6,16 @@ amc_file_2 = sys.argv[3]
 amc_file_3 = sys.argv[4]
 outputFile = sys.argv[5]
 count = 0
-
+min_frame = 200
+max_frame = 500
+line_index = 6
 #input
 input = open(amc_file_1,"r")
 data = input.readlines()
 array1 = []
 for line in data:
     if jointName in line:
-        array1.append(line.split(" ")[1])
+        array1.append(line.split(" ")[line_index])
 input.close()
 
 file1 = open(amc_file_2,"r")
@@ -21,7 +23,7 @@ data = file1.readlines()
 array2 = []
 for line in data:
     if jointName in line:
-        array2.append(line.split(" ")[1])
+        array2.append(line.split(" ")[line_index])
 file1.close()
 
 file2 = open(amc_file_3,"r")
@@ -29,7 +31,7 @@ data = file2.readlines()
 array3 = []
 for line in data:
     if jointName in line:
-        array3.append(line.split(" ")[1])
+        array3.append(line.split(" ")[line_index])
 file2.close()
 
 f = open(outputFile, "w")
@@ -37,7 +39,7 @@ x = "x = ["
 y = "y = ["
 for angles in array1:
     count = count + 1
-    if count >=600 and count <=800:
+    if count >=min_frame and count <=max_frame:
         x = x+str(count)+" "
         y = y+angles+" "
 x += "];\n"
@@ -47,7 +49,7 @@ count = 0
 y1 = "y1 = ["
 for angles in array2:
     count = count + 1
-    if count >=600 and count <=800:
+    if count >=min_frame and count <=max_frame:
         y1 = y1+angles+" "
 y1 += "];\n"
 
@@ -55,7 +57,7 @@ count = 0
 y2 = "y2 = ["
 for angles in array3:
     count = count + 1
-    if count >=600 and count <=800:
+    if count >=min_frame and count <=max_frame:
         y2 = y2+angles+" "
 y2 += "];\n"
 
