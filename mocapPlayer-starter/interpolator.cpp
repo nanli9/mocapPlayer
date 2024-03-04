@@ -429,6 +429,7 @@ void Interpolator::Euler2Quaternion(double angles[3], Quaternion<double> & q)
     Quaternion<double> z = Quaternion<double>(cos(angles[2] / 2),0,0, sin(angles[2] / 2));
     q = z * y * x;
     q.Normalize();
+
     //convert it back to degree
     for (int i = 0; i < 3; i++)
         angles[i] *= 180 / M_PI;
@@ -455,38 +456,39 @@ void Interpolator::Quaternion2Euler(Quaternion<double> & q, double angles[3])
 
 Quaternion<double> Interpolator::Slerp(double t, Quaternion<double> & qStart, Quaternion<double> & qEnd_)
 {
-    if (qStart == qEnd_)
+  if (qStart == qEnd_)
         return qStart;
-  // students should implement this
   Quaternion<double> result;
   Quaternion<double> qStartAlternative = -1 * qStart;
   double delta = qStart.Gets() * qEnd_.Gets() + qStart.Getx() * qEnd_.Getx() + qStart.Gety() * qEnd_.Gety()+ qStart.Getz() * qEnd_.Getz();
   double beta = qStartAlternative.Gets() * qEnd_.Gets() + qStartAlternative.Getx() * qEnd_.Getx() + qStartAlternative.Gety() * qEnd_.Gety()+ qStartAlternative.Getz() * qEnd_.Getz();
-  double theta = acos(delta);
-  double alpha = acos(beta);
-  if (theta != theta)
+  if (delta > 1 || 1 - delta < 0.001)
   {
-      printf("*****************************\n");
-      printf("qStart: %.1f, %.1f, %.1f, %.1f\n", qStart.Gets(), qStart.Getx(), qStart.Gety(), qStart.Getz());
-      printf("qEnd_: %.1f, %.1f, %.1f, %.1f\n", qEnd_.Gets(), qEnd_.Getx(), qEnd_.Gety(), qEnd_.Getz());
-  }
-
-
-  if (theta > alpha)
-  {
-      qStart = qStartAlternative;
-      theta = alpha;
-  }
-  if (theta < 0.01 )
-  {
-      //theta is small then we do LERP
+      //angle is small then we do LERP
       result = (1 - t) * qStart + t * qEnd_;
       result.Normalize();
   }
   else
   {
-      result = (sin((1 - t) * theta) / sin(theta)) * qStart + (sin(theta*t)/sin(theta))* qEnd_;
+      double theta = acos(delta);
+      double alpha = acos(beta);
+      if (delta != delta)
+      {
+          printf("*****************************\n");
+          printf("delta:  %.1f\n", delta);
+          printf("qStart: %.1f, %.1f, %.1f, %.1f\n", qStart.Gets(), qStart.Getx(), qStart.Gety(), qStart.Getz());
+          printf("qEnd_: %.1f, %.1f, %.1f, %.1f\n", qEnd_.Gets(), qEnd_.Getx(), qEnd_.Gety(), qEnd_.Getz());
+      }
+      if (theta > alpha)
+      {
+          qStart = qStartAlternative;
+          theta = alpha;
+      }
+      result = (sin((1 - t) * theta) / sin(theta)) * qStart + (sin(theta * t) / sin(theta)) * qEnd_;
+      if (result.Norm2() - 1 > 0.001)
+          result.Print();
   }
+
   return result;
 }
 //generate four points for DeCasteljau Quaternion
