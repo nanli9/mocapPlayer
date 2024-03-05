@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <float.h>
+#include <vector>
 #include "motion.h"
 #include "interpolator.h"
 #include "types.h"

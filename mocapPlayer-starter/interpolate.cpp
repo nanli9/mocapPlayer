@@ -8,11 +8,38 @@
 #include <math.h>
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include "interpolator.h"
 #include "motion.h"
 
+std::vector<int> keyFrames(char* Nstring)
+{
+    std::string str = Nstring;
+    std::vector<int> keyframes;
+    int index = 0;
+    int count = 0;
+    int i = 0;
+    for (int i = 0; i < str.length(); i++)
+    {
+        if (str.at(i) == ',')
+        {
+            int a = atoi(str.substr(index, count).c_str());
+            keyframes.push_back(a);
+            index = i + 1;
+            count = 0;
+        }
+        else
+            count++;
+    }
+    keyframes.push_back(atoi(str.substr(index, count).c_str()));
+    return keyframes;
+}
+
+
+
 int main(int argc, char **argv) 
 {
+    
   if ( argc != 7 )
   {
     printf("Interpolates motion capture data.");
@@ -42,6 +69,14 @@ int main(int argc, char **argv)
     exit(1);
   }
   printf("N=%d\n", N);
+
+  std::vector<int> a = keyFrames("10,11,12,13");
+  for (int i = 0; i < a.size(); i++)
+  {
+      printf("%d ", a[i]);
+  }
+  printf("\n");
+
 
   Skeleton * pSkeleton = NULL;	// skeleton as read from an ASF file (input)
   Motion * pInputMotion = NULL; // motion as read from an AMC file (input)
