@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <float.h>
-#include <vector>
 #include "motion.h"
 #include "interpolator.h"
 #include "types.h"
@@ -21,20 +20,20 @@ Interpolator::~Interpolator()
 }
 
 //Create interpolated motion
-void Interpolator::Interpolate(Motion * pInputMotion, Motion ** pOutputMotion, int N) 
+void Interpolator::Interpolate(Motion * pInputMotion, Motion ** pOutputMotion, std::vector<int> Ns)
 {
   //Allocate new motion
   *pOutputMotion = new Motion(pInputMotion->GetNumFrames(), pInputMotion->GetSkeleton()); 
 
   //Perform the interpolation
   if ((m_InterpolationType == LINEAR) && (m_AngleRepresentation == EULER))
-    LinearInterpolationEuler(pInputMotion, *pOutputMotion, N);
+    LinearInterpolationEuler(pInputMotion, *pOutputMotion, Ns);
   else if ((m_InterpolationType == LINEAR) && (m_AngleRepresentation == QUATERNION))
-    LinearInterpolationQuaternion(pInputMotion, *pOutputMotion, N);
+    LinearInterpolationQuaternion(pInputMotion, *pOutputMotion, Ns);
   else if ((m_InterpolationType == BEZIER) && (m_AngleRepresentation == EULER))
-    BezierInterpolationEuler(pInputMotion, *pOutputMotion, N);
+    BezierInterpolationEuler(pInputMotion, *pOutputMotion, Ns);
   else if ((m_InterpolationType == BEZIER) && (m_AngleRepresentation == QUATERNION))
-    BezierInterpolationQuaternion(pInputMotion, *pOutputMotion, N);
+    BezierInterpolationQuaternion(pInputMotion, *pOutputMotion, Ns);
   else
   {
     printf("Error: unknown interpolation / angle representation type.\n");
@@ -42,11 +41,13 @@ void Interpolator::Interpolate(Motion * pInputMotion, Motion ** pOutputMotion, i
   }
 }
 
-void Interpolator::LinearInterpolationEuler(Motion * pInputMotion, Motion * pOutputMotion, int N)
+void Interpolator::LinearInterpolationEuler(Motion * pInputMotion, Motion * pOutputMotion, std::vector<int> Ns)
 {
   int inputLength = pInputMotion->GetNumFrames(); // frames are indexed 0, ..., inputLength-1
   printf("frames: %d\n", inputLength);
   int startKeyframe = 0;
+  int index = 0;
+  int N = Ns[index];
   while (startKeyframe + N + 1 < inputLength)
   {
     int endKeyframe = startKeyframe + N + 1;
@@ -86,6 +87,12 @@ void Interpolator::LinearInterpolationEuler(Motion * pInputMotion, Motion * pOut
     }
 
     startKeyframe = endKeyframe;
+
+    if (index < Ns.size()-1)
+        index++;
+    else
+        index = 0;
+    N = Ns[index];
   }
 
   for(int frame=startKeyframe+1; frame<inputLength; frame++)
@@ -178,14 +185,15 @@ void Interpolator::Euler2Rotation(double angles[3], double R[9])
         angles[i] *= 180 / M_PI;
 }
 
-void Interpolator::BezierInterpolationEuler(Motion * pInputMotion, Motion * pOutputMotion, int N)
+void Interpolator::BezierInterpolationEuler(Motion * pInputMotion, Motion * pOutputMotion, std::vector<int> Ns)
 {
   // students should implement this
     int inputLength = pInputMotion->GetNumFrames(); // frames are indexed 0, ..., inputLength-1
 
     int startKeyframe = 0;
     vector a,a_bar,b;
-
+    int index = 0;
+    int N = Ns[index];
     while (startKeyframe + N + 1 < inputLength)
     {
         int endKeyframe = startKeyframe + N + 1;
@@ -240,18 +248,25 @@ void Interpolator::BezierInterpolationEuler(Motion * pInputMotion, Motion * pOut
             pOutputMotion->SetPosture(startKeyframe + frame, interpolatedPosture);
         }
         startKeyframe = endKeyframe;
+        if (index < Ns.size()-1)
+            index++;
+        else
+            index = 0;
+        N = Ns[index];
     }
 
     for (int frame = startKeyframe + 1; frame < inputLength; frame++)
         pOutputMotion->SetPosture(frame, *(pInputMotion->GetPosture(frame)));
 }
 
-void Interpolator::LinearInterpolationQuaternion(Motion * pInputMotion, Motion * pOutputMotion, int N)
+void Interpolator::LinearInterpolationQuaternion(Motion * pInputMotion, Motion * pOutputMotion, std::vector<int> Ns)
 {
   // students should implement this
     int inputLength = pInputMotion->GetNumFrames(); // frames are indexed 0, ..., inputLength-1
     printf("frames: %d\n", inputLength);
     int startKeyframe = 0;
+    int index = 0;
+    int N = Ns[index];
     while (startKeyframe + N + 1 < inputLength)
     {
         int endKeyframe = startKeyframe + N + 1;
@@ -291,20 +306,26 @@ void Interpolator::LinearInterpolationQuaternion(Motion * pInputMotion, Motion *
         }
 
         startKeyframe = endKeyframe;
+        if (index < Ns.size()-1)
+            index++;
+        else
+            index = 0;
+        N = Ns[index];
     }
 
     for (int frame = startKeyframe + 1; frame < inputLength; frame++)
         pOutputMotion->SetPosture(frame, *(pInputMotion->GetPosture(frame)));
 }
 
-void Interpolator::BezierInterpolationQuaternion(Motion * pInputMotion, Motion * pOutputMotion, int N)
+void Interpolator::BezierInterpolationQuaternion(Motion * pInputMotion, Motion * pOutputMotion, std::vector<int> Ns)
 {
   // students should implement this
     int inputLength = pInputMotion->GetNumFrames(); // frames are indexed 0, ..., inputLength-1
 
     int startKeyframe = 0;
     Quaternion<double> a, a_bar, b;
-
+    int index = 0;
+    int N = Ns[index];
     while (startKeyframe + N + 1 < inputLength)
     {
         int endKeyframe = startKeyframe + N + 1;
@@ -413,6 +434,11 @@ void Interpolator::BezierInterpolationQuaternion(Motion * pInputMotion, Motion *
             pOutputMotion->SetPosture(startKeyframe + frame, interpolatedPosture);
         }
         startKeyframe = endKeyframe;
+        if (index < Ns.size()-1)
+            index++;
+        else
+            index = 0;
+        N = Ns[index];
     }
 
     for (int frame = startKeyframe + 1; frame < inputLength; frame++)

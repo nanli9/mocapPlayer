@@ -13,6 +13,7 @@
 
 #include "motion.h"
 #include "quaternion.h"
+#include <vector>
 
 enum InterpolationType
 {
@@ -37,7 +38,7 @@ public:
   void SetAngleRepresentation(AngleRepresentation angleRepresentation) {m_AngleRepresentation = angleRepresentation;};
 
   //Create interpolated motion and store it into pOutputMotion (which will also be allocated)
-  void Interpolate(Motion * pInputMotion, Motion ** pOutputMotion, int N);
+  void Interpolate(Motion * pInputMotion, Motion ** pOutputMotion, std::vector<int> Ns);
 
 protected:
   InterpolationType m_InterpolationType; //Interpolation type (Linear, Bezier)
@@ -57,10 +58,10 @@ protected:
   Quaternion<double> Double(Quaternion<double> p, Quaternion<double> q);
 
   // interpolation routines
-  void LinearInterpolationEuler(Motion * pInputMotion, Motion * pOutputMotion, int N);
-  void BezierInterpolationEuler(Motion * pInputMotion, Motion * pOutputMotion, int N);
-  void LinearInterpolationQuaternion(Motion * pInputMotion, Motion * pOutputMotion, int N);
-  void BezierInterpolationQuaternion(Motion * pInputMotion, Motion * pOutputMotion, int N);
+  void LinearInterpolationEuler(Motion * pInputMotion, Motion * pOutputMotion, std::vector<int> Ns);
+  void BezierInterpolationEuler(Motion * pInputMotion, Motion * pOutputMotion, std::vector<int> Ns);
+  void LinearInterpolationQuaternion(Motion * pInputMotion, Motion * pOutputMotion, std::vector<int> Ns);
+  void BezierInterpolationQuaternion(Motion * pInputMotion, Motion * pOutputMotion, std::vector<int> Ns);
 
   // Bezier spline evaluation
   vector DeCasteljauEuler(double t, vector p0, vector p1, vector p2, vector p3); // evaluate Bezier spline at t, using DeCasteljau construction, vector version

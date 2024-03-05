@@ -62,18 +62,18 @@ int main(int argc, char **argv)
   char * NString = argv[5];
   char * outputMotionCaptureFile = argv[6];
 
-  int N = strtol(NString, NULL, 10);
+  /*int N = strtol(NString, NULL, 10);
   if (N < 0)
   {
     printf("Error: invalid N value (%d).\n", N);
     exit(1);
   }
-  printf("N=%d\n", N);
+  printf("N=%d\n", N);*/
 
-  std::vector<int> a = keyFrames("10,11,12,13");
-  for (int i = 0; i < a.size(); i++)
+  std::vector<int> N = keyFrames("15,13,12,11");
+  for (int i = 0; i < N.size(); i++)
   {
-      printf("%d ", a[i]);
+      printf("%d ", N[i]);
   }
   printf("\n");
 
