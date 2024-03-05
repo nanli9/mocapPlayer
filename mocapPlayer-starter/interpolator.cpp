@@ -204,10 +204,7 @@ void Interpolator::BezierInterpolationEuler(Motion * pInputMotion, Motion * pOut
         // copy start and end keyframe
         pOutputMotion->SetPosture(startKeyframe, *startPosture);
         pOutputMotion->SetPosture(endKeyframe, *endPosture);
-
-        /*if (startKeyframe == 0)
-            a = LERPEuler();*/
-        // interpolate in between
+        
         for (int frame = 1; frame <= N; frame++)
         {
             Posture interpolatedPosture;
@@ -219,8 +216,6 @@ void Interpolator::BezierInterpolationEuler(Motion * pInputMotion, Motion * pOut
             // interpolate bone rotations
             for (int bone = 0; bone < MAX_BONES_IN_ASF_FILE; bone++)
             {
-                //Posture* p_p, p_c, p_n;
-                //interpolatedPosture.bone_rotation[bone] = startPosture->bone_rotation[bone] * (1 - t) + endPosture->bone_rotation[bone] * t;
                 if (startKeyframe==0)
                 {
                     Posture* nextPosture = pInputMotion->GetPosture(endKeyframe + N + 1);
@@ -337,8 +332,7 @@ void Interpolator::BezierInterpolationQuaternion(Motion * pInputMotion, Motion *
         pOutputMotion->SetPosture(startKeyframe, *startPosture);
         pOutputMotion->SetPosture(endKeyframe, *endPosture);
 
-        /*if (startKeyframe == 0)
-            a = LERPEuler();*/
+     
             // interpolate in between
         for (int frame = 1; frame <= N; frame++)
         {
@@ -371,7 +365,6 @@ void Interpolator::BezierInterpolationQuaternion(Motion * pInputMotion, Motion *
                     Euler2Quaternion(tmp, q_2);
                     nextPosture->bone_rotation[bone].getValue(tmp);
                     Euler2Quaternion(tmp, q_3);
-                    //a = LERPEuler(1 / 3, startPosture->bone_rotation[bone], LERPEuler(2, nextPosture->bone_rotation[bone], endPosture->bone_rotation[bone]));
                     a = Slerp(1.0/3.0, q_1,Slerp(2,q_3,q_2));
 
                     a_bar = Slerp(0.5, Slerp(2.0, q_1, q_2), q_3);
@@ -389,7 +382,6 @@ void Interpolator::BezierInterpolationQuaternion(Motion * pInputMotion, Motion *
                     Euler2Quaternion(tmp, q_2);
                     endPosture->bone_rotation[bone].getValue(tmp);
                     Euler2Quaternion(tmp, q_3);
-                    //b = LERPEuler(1 / 3, endPosture->bone_rotation[bone], LERPEuler(2, prePosture->bone_rotation[bone], startPosture->bone_rotation[bone]));
                     b = Slerp(1.0/3.0,q_3,Slerp(2,q_1,q_2));
 
                     a_bar = Slerp(0.5, Slerp(2, q_1, q_2), q_3);
@@ -410,26 +402,12 @@ void Interpolator::BezierInterpolationQuaternion(Motion * pInputMotion, Motion *
                     a_bar = Slerp(0.5,Slerp(2,q_1,q_2),q_3);
                     a = Slerp(1.0/3.0,q_2,a_bar);
                     b = Slerp(-1.0/3.0,q_2,a_bar);
-                   // a_bar = LERPEuler(0.5, LERPEuler(2.0, prePosture->bone_rotation[bone], startPosture->bone_rotation[bone]), endPosture->bone_rotation[bone]);
-                   // a = LERPEuler(1 / 3, startPosture->bone_rotation[bone], a_bar);
-                    //b = LERPEuler(-1 / 3, startPosture->bone_rotation[bone], a_bar);
+                  
                 }
                 result = DeCasteljauQuaternion(t, start,a,b,end);
                 Quaternion2Euler(result, resultEuler);
                 interpolatedPosture.bone_rotation[bone] = resultEuler;
-                //if (resultEuler[0] != resultEuler[0])
-                //{
-                //    printf("startKeyframe: %d\n", startKeyframe);
-                //    //printf("%.1f, %.1f, %.1f, %.1f", result.Gets(), result.Getx(), result.Gety(), result.Getz());
-                //    //printf("%.1f, %.1f, %.1f, %.1f", result.Gets(), result.Getx(), result.Gety(), result.Getz());
-                //    printf("%.1f, %.1f, %.1f, %.1f", end.Gets(), end.Getx(), end.Gety(), end.Getz());
-                //    printf("\n");
-                //}
-
-                /*for (int i = 0; i < 3; i++)
-                    printf("%.1f, %.1f, %.1f", resultEuler[0], resultEuler[1], resultEuler[2]);
-                printf("\n");*/
-                //interpolatedPosture.bone_rotation[bone] = DeCasteljauEuler(t, startPosture->bone_rotation[bone], a, b, endPosture->bone_rotation[bone]);
+               
             }
             pOutputMotion->SetPosture(startKeyframe + frame, interpolatedPosture);
         }
@@ -499,13 +477,6 @@ Quaternion<double> Interpolator::Slerp(double t, Quaternion<double> & qStart, Qu
   {
       double theta = acos(delta);
       double alpha = acos(beta);
-      if (delta != delta)
-      {
-          printf("*****************************\n");
-          printf("delta:  %.1f\n", delta);
-          printf("qStart: %.1f, %.1f, %.1f, %.1f\n", qStart.Gets(), qStart.Getx(), qStart.Gety(), qStart.Getz());
-          printf("qEnd_: %.1f, %.1f, %.1f, %.1f\n", qEnd_.Gets(), qEnd_.Getx(), qEnd_.Gety(), qEnd_.Getz());
-      }
       if (theta > alpha)
       {
           qStart = qStartAlternative;
@@ -555,20 +526,6 @@ Quaternion<double> Interpolator::DeCasteljauQuaternion(double t, Quaternion<doub
   Quaternion<double> r0 = Slerp(t, q0, q1);
   Quaternion<double> r1 = Slerp(t, q1, q2);
   result = Slerp(t, r0, r1);
-
-  if (result != result)
-  {
-      /*printf("%.1f \n", t);
-      printf("p0: %.1f, %.1f, %.1f, %.1f\n", p0.Gets(), p0.Getx(), p0.Gety(), p0.Getz());
-      printf("p1: %.1f, %.1f, %.1f, %.1f\n", p1.Gets(), p1.Getx(), p1.Gety(), p1.Getz());
-      printf("p2: %.1f, %.1f, %.1f, %.1f\n", p2.Gets(), p2.Getx(), p2.Gety(), p2.Getz());
-      printf("p3: %.1f, %.1f, %.1f, %.1f\n", p3.Gets(), p3.Getx(), p3.Gety(), p3.Getz());
-
-      printf("q0: %.1f, %.1f, %.1f, %.1f\n", q0.Gets(), q0.Getx(), q0.Gety(), q0.Getz());
-      printf("q1: %.1f, %.1f, %.1f, %.1f\n", q1.Gets(), q1.Getx(), q1.Gety(), q1.Getz());
-      printf("q2: %.1f, %.1f, %.1f, %.1f\n", q2.Gets(), q2.Getx(), q2.Gety(), q2.Getz());*/
-  }
-
   return result;
 }
 

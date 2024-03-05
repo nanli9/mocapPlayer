@@ -11,7 +11,7 @@
 #include <vector>
 #include "interpolator.h"
 #include "motion.h"
-
+#include <algorithm>   
 std::vector<int> keyFrames(char* Nstring)
 {
     std::string str = Nstring;
@@ -32,6 +32,8 @@ std::vector<int> keyFrames(char* Nstring)
             count++;
     }
     keyframes.push_back(atoi(str.substr(index, count).c_str()));
+    std::sort(keyframes.begin(), keyframes.end(), std::greater<>());
+
     return keyframes;
 }
 
@@ -70,7 +72,7 @@ int main(int argc, char **argv)
   }
   printf("N=%d\n", N);*/
 
-  std::vector<int> N = keyFrames("15,13,12,11");
+  std::vector<int> N = keyFrames(NString);
   for (int i = 0; i < N.size(); i++)
   {
       printf("%d ", N[i]);
